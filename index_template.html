@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <!-- The title of the web page -->
+  <title>Type your page title here</title>
+
+  <!-- Link to Montserrat font -->
+  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+  <!-- Link the css files -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css">
+
+  <!-- The rest of the css -->
+  <style>
+    /* This declares the following code to be css */
+
+    body {
+      margin: 0px;
+      height: 100%;
+      width: 100%;
+    }
+
+    /* Add banner to header background */
+    header {
+      position: fixed;
+      top: 0px;
+      width: 100%;
+      height: 52px;
+      background-color: #000000;
+      box-shadow: 0px 0px 5px black;
+      z-index: 800;
+    }
+
+    /* Set font styles */
+    h1 {
+      font-family: 'Montserrat', sans-serif;
+      color: white;
+      font-size: 16px;
+      display: inline-block;
+      margin-top: 0.5em;
+      margin-bottom: 0.0em;
+      margin-left: 0.5em;
+      margin-right: 0;
+      font-weight: normal;
+    }
+
+    h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      color: white;
+      display: inline-block;
+      margin-top: 0.25em;
+      margin-bottom: 0.0em;
+      margin-left: 0.75em;
+      margin-right: 0;
+      font-weight: normal;
+    }
+
+    h3 {
+      font-family: 'Montserrat', sans-serif;
+      padding: 0px;
+      font-size: 16px;
+      margin-left: 5px;
+      font-weight: bold;
+    }
+
+    h4 {
+      font-family: 'Montserrat', sans-serif;
+      padding: 5px;
+      font-size: 13px;
+      line-height: 16px;
+    }
+
+    /* Set map parameters */
+    #map {
+      position: fixed;
+      bottom: 0px;
+      width: 100%;
+      top: 52px;
+    }
+  </style> <!-- Escape the css code -->
+
+</head>
+
+<body>
+  <header>
+    <h1>Type your map title here</h1><br>
+    <h2>Your name, University of Iowa</h2>
+  </header>
+
+  <!-- The map will go inside this div below -->
+  <div id="map"></div>
+
+  <!-- Link to the js files -->
+  <script src="https://code.jquery.com/jquery-3.2.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+
+  <!-- The rest of the JavaScript -->
+  <script>
+    // Initialize the map
+    var map = L.map('map', {
+      //center:[41.928016, -89.299357], // You can hardcode the center of the map on specific coordinates
+      //zoom: 5 // You can hardcode the initial zoom level
+    });
+
+    // Add openstreet baselayer to the map (other options can be found here: https://leaflet-extras.github.io/leaflet-providers/preview/)
+    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18, // Set the maximum zoom level
+      minZoom: 5, // Set the minimum zoom level
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map); // Add the baselayer to the map
+
+    // Add a scale bar
+    L.control.scale({
+      position: 'bottomright' // Position the scale bar at the bottom-right corner
+    }).addTo(map);
+
+    /*
+    // Add functions to style the polygons by values
+    function getColor(d) {
+      return d === null ? 'red' :
+            'blue';
+    };
+    */
+
+    // Load your data asynchronously
+    d3.queue()
+      .defer(d3.json, 'data/Your_File.geojson') // Provide the path to your data file
+      //.defer(d3.json, 'data/Your_File.geojson') // Add more files if needed
+      .await(drawMap); // Load the layers after the map loads
+
+    // Provide instructions for drawing the map
+    function drawMap(err, data1) {
+
+      var dataOne = L.geoJson(data1, { // Define the first data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: "grey",
+            weight: 1,
+            opacity: 0.75,
+            fillColor: "grey",
+            fillOpacity: 0.15
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+          
+          var props = layer.feature.properties; // Get the properties of the layer features
+          console.log(props); // Check these properties in the developer web console
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h3>" + props + "</h3>" +
+            "<h4>Information:" +
+            "<br>" + props + "</h4>"
+          );
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.5
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataOne.resetStyle(e.target);
+
+            },
+
+          });
+        }
+
+      }).addTo(map); // Add the first data layer to the map
+
+      // Fit the map to the extent of the first data layer upon drawing
+      map.fitBounds(dataOne.getBounds());
+
+      // Define the overlay layers for the layer control
+      var overlays = {
+        "First Data Layer": dataOne,
+      };
+
+      // Send the layers to the layer control
+      L.control.layers(null, overlays, {
+        collapsed: false,
+      }).addTo(map);
+
+    }; //end drawMap function
+  </script>
+</body>
+
+</html>
