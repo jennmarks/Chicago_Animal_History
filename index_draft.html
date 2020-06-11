@@ -94,7 +94,8 @@
 
   <!-- Link to the js files -->
   <script src="https://code.jquery.com/jquery-3.2.0.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>
+  <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>-->
+  <script src='https://api.mapbox.com/mapbox.js/v3.2.1/mapbox.js'></script>
   <script src="https://d3js.org/d3.v4.min.js"></script>
 
   <!-- The rest of the JavaScript -->
@@ -105,13 +106,17 @@
       //zoom: 5 // You can hardcode the initial zoom level
     });
 
+    L.mapbox.accessToken = 'pk.eyJ1IjoiamVib3dlMyIsImEiOiJjajY1M3l6bWIxeTQwMndtcXRuN3F4ejFpIn0.aE7P49pqaBKjy2HTOw-tgw'; // enter Mapbox access token
+
+    var basemap1 = L.mapbox.styleLayer('mapbox://styles/jebowe3/ckb6qq7er2ty71lr53by16daz').addTo(map);
+/*
     // Add openstreet baselayer to the map (other options can be found here: https://leaflet-extras.github.io/leaflet-providers/preview/)
     L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 18, // Set the maximum zoom level
       minZoom: 5, // Set the minimum zoom level
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map); // Add the baselayer to the map
-
+*/
     // Add a scale bar
     L.control.scale({
       position: 'bottomright' // Position the scale bar at the bottom-right corner
@@ -140,9 +145,9 @@
         style: function(feature) {
           return {
             color: "red",
-            weight: 2.5,
+            weight: 2.0,
             opacity: 0.75,
-            dashArray: "5,5",
+            //dashArray: "20,15",
             lineJoin: "round"
           };
         },
@@ -154,9 +159,9 @@
           console.log(props); // Check these properties in the developer web console
 
           // Bind a popup window to the layer
-          layer.bindPopup("<h3>" + props + "</h3>" +
+          layer.bindPopup("<h3>The " + props.line + " Line</h3>" +
             "<h4>Information:" +
-            "<br>" + props + "</h4>"
+            "<br>" + props.line + "</h4>"
           );
 
           layer.on({
