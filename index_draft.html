@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <!-- The title of the web page -->
-  <title>Type your page title here</title>
+  <title>Chicago Horse Railways</title>
 
   <!-- Link to Montserrat font -->
   <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
@@ -85,8 +85,8 @@
 
 <body>
   <header>
-    <h1>Type your map title here</h1><br>
-    <h2>Your name, University of Iowa</h2>
+    <h1>Chicago Horse Railways</h1><br>
+    <h2>Jenn Marks, University of Iowa</h2>
   </header>
 
   <!-- The map will go inside this div below -->
@@ -95,8 +95,10 @@
   <!-- Link to the js files -->
   <script src="https://code.jquery.com/jquery-3.2.0.min.js"></script>
   <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.js"></script>-->
+  <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
   <script src='https://api.mapbox.com/mapbox.js/v3.2.1/mapbox.js'></script>
   <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="js/MovingMarker.js"></script>
 
   <!-- The rest of the JavaScript -->
   <script>
@@ -156,7 +158,7 @@
         onEachFeature: function(feature, layer) {
 
           var props = layer.feature.properties; // Get the properties of the layer features
-          console.log(props); // Check these properties in the developer web console
+          //console.log(props); // Check these properties in the developer web console
 
           // Bind a popup window to the layer
           layer.bindPopup("<h3>The " + props.line + " Line</h3>" +
@@ -188,6 +190,7 @@
         }
 
       }).addTo(map); // Add the first data layer to the map
+
 /*
       var dataTwo = L.geoJson(data2, { // Define the first data layer with a variable
 
