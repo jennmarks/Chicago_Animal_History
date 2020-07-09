@@ -112,15 +112,17 @@
 
     var basemap1872 = L.mapbox.styleLayer('mapbox://styles/jebowe3/ckb6qq7er2ty71lr53by16daz');
 
-    var basemap1886 = L.mapbox.styleLayer('mapbox://styles/jebowe3/ckce37rhs0jy91io1e4txitou').addTo(map);
+    var basemap1886 = L.mapbox.styleLayer('mapbox://styles/jebowe3/ckcf2f1q51huk1ilbbx16uu5p').addTo(map); // Add the baselayer to the map
 
+    var contemporaryBasemap = L.mapbox.styleLayer('mapbox://styles/jebowe3/ckb6qb4uv4uxx1itcz63hgg41');
+/*
     // Add openstreet baselayer to the map (other options can be found here: https://leaflet-extras.github.io/leaflet-providers/preview/)
     var contemporaryBasemap = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19, // Set the maximum zoom level
       minZoom: 5, // Set the minimum zoom level
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map); // Add the baselayer to the map
-
+    });
+*/
     // Add a scale bar
     L.control.scale({
       position: 'bottomright' // Position the scale bar at the bottom-right corner
@@ -148,7 +150,7 @@
         // Style the layer
         style: function(feature) {
           return {
-            color: "red",
+            color: "#00008B",
             weight: 2.0,
             opacity: 0.75,
             //dashArray: "20,15",
@@ -174,7 +176,7 @@
             mouseover: function(e) {
               var layer = e.target;
               layer.setStyle({
-                color: '#3232FF',
+                color: '#6495ED',
                 weight: 3,
                 opacity: 0.75
               });
