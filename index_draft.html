@@ -110,15 +110,17 @@
 
     L.mapbox.accessToken = 'pk.eyJ1IjoiamVib3dlMyIsImEiOiJjajY1M3l6bWIxeTQwMndtcXRuN3F4ejFpIn0.aE7P49pqaBKjy2HTOw-tgw'; // enter Mapbox access token
 
-    var basemap1 = L.mapbox.styleLayer('mapbox://styles/jebowe3/ckb6qq7er2ty71lr53by16daz').addTo(map);
-    /*
-        // Add openstreet baselayer to the map (other options can be found here: https://leaflet-extras.github.io/leaflet-providers/preview/)
-        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 18, // Set the maximum zoom level
-          minZoom: 5, // Set the minimum zoom level
-          attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(map); // Add the baselayer to the map
-    */
+    var basemap1872 = L.mapbox.styleLayer('mapbox://styles/jebowe3/ckb6qq7er2ty71lr53by16daz');
+
+    var basemap1886 = L.mapbox.styleLayer('mapbox://styles/jebowe3/ckce37rhs0jy91io1e4txitou').addTo(map);
+
+    // Add openstreet baselayer to the map (other options can be found here: https://leaflet-extras.github.io/leaflet-providers/preview/)
+    var contemporaryBasemap = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18, // Set the maximum zoom level
+      minZoom: 5, // Set the minimum zoom level
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map); // Add the baselayer to the map
+
     // Add a scale bar
     L.control.scale({
       position: 'bottomright' // Position the scale bar at the bottom-right corner
@@ -191,66 +193,73 @@
 
       }).addTo(map); // Add the first data layer to the map
 
-/*
-      var dataTwo = L.geoJson(data2, { // Define the first data layer with a variable
+      /*
+            var dataTwo = L.geoJson(data2, { // Define the first data layer with a variable
 
-        pointToLayer: function(feature, ll) {
+              pointToLayer: function(feature, ll) {
 
-          //style the points as circle markers
-          return L.circleMarker(ll, {
-            radius: 3,
-            fillColor: "black",
-            color: "orange",
-            weight: 0.5,
-            opacity: 1.0,
-            fillOpacity: 1.0
-          })
-        }, //end pointToLayer
+                //style the points as circle markers
+                return L.circleMarker(ll, {
+                  radius: 3,
+                  fillColor: "black",
+                  color: "orange",
+                  weight: 0.5,
+                  opacity: 1.0,
+                  fillOpacity: 1.0
+                })
+              }, //end pointToLayer
 
-        //restyle on mouseover, reset style on mouseout
-        onEachFeature: function(feature, layer) {
+              //restyle on mouseover, reset style on mouseout
+              onEachFeature: function(feature, layer) {
 
-          var props = layer.feature.properties;
+                var props = layer.feature.properties;
 
-          //define what happens on mouseover
-          layer.on("mouseover", function(e) {
-            layer.setStyle({
-              radius: 3,
-              fillColor: "yellow",
-              color: "#3978BF",
-              weight: 0.5,
-              opacity: 1.0,
-              fillOpacity: 1.0,
-            });
-          });
+                //define what happens on mouseover
+                layer.on("mouseover", function(e) {
+                  layer.setStyle({
+                    radius: 3,
+                    fillColor: "yellow",
+                    color: "#3978BF",
+                    weight: 0.5,
+                    opacity: 1.0,
+                    fillOpacity: 1.0,
+                  });
+                });
 
-          //bind a popup window to each circle marker
-          layer.bindPopup("<h4 style='font-size:12px'>Event Name" +
-            "<br>" + props.New_Date +
-            "<br>Notes: " + props.Notes + "</h4>"
-          );
+                //bind a popup window to each circle marker
+                layer.bindPopup("<h4 style='font-size:12px'>Event Name" +
+                  "<br>" + props.New_Date +
+                  "<br>Notes: " + props.Notes + "</h4>"
+                );
 
-          //define what happens on mouseout
-          layer.on("mouseout", function(e) {
+                //define what happens on mouseout
+                layer.on("mouseout", function(e) {
 
-            //style the points
-            layer.setStyle({
-              radius: 3,
-              fillColor: "black",
-              color: "orange",
-              weight: 0.5,
-              opacity: 1.0,
-              fillOpacity: 1.0,
-            });
+                  //style the points
+                  layer.setStyle({
+                    radius: 3,
+                    fillColor: "black",
+                    color: "orange",
+                    weight: 0.5,
+                    opacity: 1.0,
+                    fillOpacity: 1.0,
+                  });
 
-          });
+                });
 
-        } //end onEachFeature
+              } //end onEachFeature
 
-      }); // End DataTwo
-*/
+            }); // End DataTwo
+      */
       // Fit the map to the extent of the first data layer upon drawing
       map.fitBounds(dataOne.getBounds());
+
+      // Define the baselayers for the layer control
+      var baselayers = {
+        "1872": basemap1872,
+        "1886": basemap1886,
+        "Contemporary": contemporaryBasemap,
+      };
 
       // Define the overlay layers for the layer control
       var overlays = {
@@ -259,7 +268,7 @@
       };
 
       // Send the layers to the layer control
-      L.control.layers(null, overlays, {
+      L.control.layers(baselayers, overlays, {
         collapsed: false,
       }).addTo(map);
 
