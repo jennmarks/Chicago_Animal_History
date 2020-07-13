@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "Market",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 1, "line": "Market" }, "geometry": { "type": "MultiLineString", "coordinates": [ [ [ -87.63696, 41.88447 ], [ -87.63692, 41.88321 ], [ -87.63688, 41.8819 ] ] ] } }
+]
+}

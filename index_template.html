@@ -101,8 +101,8 @@
   <script>
     // Initialize the map
     var map = L.map('map', {
-      center:[41.881944, -87.627778], // You can hardcode the center of the map on specific coordinates
-      zoom: 12 // You can hardcode the initial zoom level
+      //center:[41.928016, -89.299357], // You can hardcode the center of the map on specific coordinates
+      //zoom: 5 // You can hardcode the initial zoom level
     });
 
     // Add openstreet baselayer to the map (other options can be found here: https://leaflet-extras.github.io/leaflet-providers/preview/)
@@ -185,7 +185,7 @@
       }).addTo(map); // Add the first data layer to the map
 
       // Fit the map to the extent of the first data layer upon drawing
-      //map.fitBounds(dataOne.getBounds());
+      map.fitBounds(dataOne.getBounds());
 
       // Define the overlay layers for the layer control
       var overlays = {

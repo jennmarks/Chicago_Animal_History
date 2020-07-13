@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "Halsted_Milwaukee",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 1, "line": "Halsted and Milwaukee" }, "geometry": { "type": "MultiLineString", "coordinates": [ [ [ -87.64743, 41.88439 ], [ -87.64757, 41.88911 ], [ -87.64763, 41.8912 ], [ -87.65084, 41.89328 ], [ -87.65357, 41.89505 ], [ -87.6555, 41.8963 ], [ -87.65864, 41.89833 ], [ -87.66243, 41.90076 ], [ -87.66647, 41.90336 ], [ -87.67246, 41.90718 ], [ -87.67768, 41.91051 ], [ -87.68237, 41.91356 ] ] ] } }
+]
+}

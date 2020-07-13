@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "South_Western",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 1, "line": "South Western" }, "geometry": { "type": "MultiLineString", "coordinates": [ [ [ -87.66338, 41.88418 ], [ -87.66461, 41.8829 ], [ -87.66606, 41.88148 ] ] ] } }
+]
+}

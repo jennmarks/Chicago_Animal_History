@@ -9,7 +9,16 @@
   <!-- Link to Montserrat font -->
   <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
   <!-- Link the css files -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css">
+  <!--for icon support-->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.10.2/css/all.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.10.2/css/v4-shims.css">
+  <!-- for icon markers -->
+  <link rel="stylesheet" href="css/leaflet.extra-markers.min.css">
+  <!-- for grouped layer control-->
+  <link rel="stylesheet" href="css/leaflet.groupedlayercontrol.css">
 
   <!-- The rest of the css -->
   <style>
@@ -99,30 +108,34 @@
   <script src='https://api.mapbox.com/mapbox.js/v3.2.1/mapbox.js'></script>
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="js/MovingMarker.js"></script>
+  <!-- for icon markers -->
+  <script src="js/leaflet.extra-markers.min.js"></script>
+  <!-- for grouped layer control -->
+  <script src="js/leaflet.groupedlayercontrol.js"></script>
 
   <!-- The rest of the JavaScript -->
   <script>
     // Initialize the map
     var map = L.map('map', {
-      //center:[41.928016, -89.299357], // You can hardcode the center of the map on specific coordinates
-      //zoom: 5 // You can hardcode the initial zoom level
+      center: [41.881944, -87.627778], // You can hardcode the center of the map on specific coordinates
+      zoom: 13 // You can hardcode the initial zoom level
     });
 
     L.mapbox.accessToken = 'pk.eyJ1IjoiamVib3dlMyIsImEiOiJjajY1M3l6bWIxeTQwMndtcXRuN3F4ejFpIn0.aE7P49pqaBKjy2HTOw-tgw'; // enter Mapbox access token
 
-    var basemap1872 = L.mapbox.styleLayer('mapbox://styles/jebowe3/ckb6qq7er2ty71lr53by16daz');
+    var basemap1872 = L.mapbox.styleLayer('mapbox://styles/jebowe3/ckb6qq7er2ty71lr53by16daz').addTo(map); // Add the baselayer to the map
 
-    var basemap1886 = L.mapbox.styleLayer('mapbox://styles/jebowe3/ckcf2f1q51huk1ilbbx16uu5p').addTo(map); // Add the baselayer to the map
+    var basemap1886 = L.mapbox.styleLayer('mapbox://styles/jebowe3/ckcf2f1q51huk1ilbbx16uu5p');
 
     var contemporaryBasemap = L.mapbox.styleLayer('mapbox://styles/jebowe3/ckb6qb4uv4uxx1itcz63hgg41');
-/*
-    // Add openstreet baselayer to the map (other options can be found here: https://leaflet-extras.github.io/leaflet-providers/preview/)
-    var contemporaryBasemap = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19, // Set the maximum zoom level
-      minZoom: 5, // Set the minimum zoom level
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    });
-*/
+    /*
+        // Add openstreet baselayer to the map (other options can be found here: https://leaflet-extras.github.io/leaflet-providers/preview/)
+        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 18, // Set the maximum zoom level
+          minZoom: 5, // Set the minimum zoom level
+          attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map); // Add the baselayer to the map
+    */
     // Add a scale bar
     L.control.scale({
       position: 'bottomright' // Position the scale bar at the bottom-right corner
@@ -138,22 +151,57 @@
 
     // Load your data asynchronously
     d3.queue()
-      .defer(d3.json, 'data/chicago_horse_railways_1868.geojson') // Provide the path to your data file
-      //.defer(d3.json, 'data/Your_File.geojson') // Add more files if needed
+      .defer(d3.json, 'data/State.geojson') // Provide the path to your data file
+      .defer(d3.json, 'data/Randolph_Bryan_Lake_Madison.geojson') // Add more files if needed
+      .defer(d3.json, 'data/Archer.geojson') // Add more files if needed
+      .defer(d3.json, 'data/Stock_Yards_41st.geojson') // Add more files if needed
+      .defer(d3.json, 'data/Clark.geojson') // Add more files if needed
+      .defer(d3.json, 'data/Halsted_Milwaukee.geojson') // Add more files if needed
+      .defer(d3.json, 'data/Chicago.geojson') // Add more files if needed
+      .defer(d3.json, 'data/Halsted_Blue_Island.geojson') // Add more files if needed
+      .defer(d3.json, 'data/Division_Clybourn_Larrabee.geojson') // Add more files if needed
+      .defer(d3.json, 'data/Sedgwick.geojson') // Add more files if needed
+      .defer(d3.json, 'data/TwentySecond_Cottage_Grove.geojson') // Add more files if needed
+      .defer(d3.json, 'data/Fifth.geojson') // Add more files if needed
+      .defer(d3.json, 'data/Eighteenth_Indiana.geojson') // Add more files if needed
+      .defer(d3.json, 'data/Clinton_12th_Jefferson_VanBuren.geojson') // Add more files if needed
+      .defer(d3.json, 'data/Jefferson_Meagher.geojson') // Add more files if needed
+      .defer(d3.json, 'data/South_Western.geojson') // Add more files if needed
+      .defer(d3.json, 'data/Market.geojson') // Add more files if needed
       .await(drawMap); // Load the layers after the map loads
 
     // Provide instructions for drawing the map
-    function drawMap(err, data1) {
+    function drawMap(err, data1, data2, data3, data4, data5, data6, data7, data8,
+      data9, data10, data11, data12, data13, data14, data15, data16, data17) {
+
+      // Create empty arrays for pushing up lat lng coordinates from each street car geojson
+      var reversedLatLngsProcessed1 = [];
+      var reversedLatLngsProcessed2 = [];
+      var reversedLatLngsProcessed3 = [];
+      var reversedLatLngsProcessed4 = [];
+      var reversedLatLngsProcessed5 = [];
+      var reversedLatLngsProcessed6 = [];
+      var reversedLatLngsProcessed7 = [];
+      var reversedLatLngsProcessed8 = [];
+      var reversedLatLngsProcessed9 = [];
+      var reversedLatLngsProcessed10 = [];
+      var reversedLatLngsProcessed11 = [];
+      var reversedLatLngsProcessed12 = [];
+      var reversedLatLngsProcessed13 = [];
+      var reversedLatLngsProcessed14 = [];
+      var reversedLatLngsProcessed15 = [];
+      var reversedLatLngsProcessed16 = [];
+      var reversedLatLngsProcessed17 = [];
 
       var dataOne = L.geoJson(data1, { // Define the first data layer with a variable
 
         // Style the layer
         style: function(feature) {
           return {
-            color: "#00008B",
-            weight: 2.0,
+            color: "darkblue",
+            weight: 2.5,
             opacity: 0.75,
-            //dashArray: "20,15",
+            dashArray: "5,5",
             lineJoin: "round"
           };
         },
@@ -161,13 +209,23 @@
         // Restyle on mouseover, reset style on mouseout
         onEachFeature: function(feature, layer) {
 
+          var initLatLngs = layer.feature.geometry.coordinates[0]; // Get the array of all coordinates (in original lng,lat format)
+
+          reversedLatLngs = []; // Create an empty array into which you will push reversed coordinates in lat,lng format
+
+          for (var i = 0; i < initLatLngs.length; i++) { // For each coordinate in initLatLngs...
+            //...switch from lng,lat to lat,lng format and push to reversedLatLngs array
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed1.push(reversedLatLngs); // Push the reversed coordinates to the reversedLatLngsProcessed array
+
           var props = layer.feature.properties; // Get the properties of the layer features
-          //console.log(props); // Check these properties in the developer web console
 
           // Bind a popup window to the layer
-          layer.bindPopup("<h3>The " + props.line + " Line</h3>" +
+          layer.bindPopup("<h3>" + props + "</h3>" +
             "<h4>Information:" +
-            "<br>" + props.line + "</h4>"
+            "<br>" + props + "</h4>"
           );
 
           layer.on({
@@ -176,7 +234,7 @@
             mouseover: function(e) {
               var layer = e.target;
               layer.setStyle({
-                color: '#6495ED',
+                color: '#3232FF',
                 weight: 3,
                 opacity: 0.75
               });
@@ -191,88 +249,1507 @@
             },
 
           });
-        }
+        },
 
-      }).addTo(map); // Add the first data layer to the map
+      }); // End first layer
 
-      /*
-            var dataTwo = L.geoJson(data2, { // Define the first data layer with a variable
+      var dataTwo = L.geoJson(data2, { // Define the second data layer with a variable
 
-              pointToLayer: function(feature, ll) {
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: "darkblue",
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
 
-                //style the points as circle markers
-                return L.circleMarker(ll, {
-                  radius: 3,
-                  fillColor: "black",
-                  color: "orange",
-                  weight: 0.5,
-                  opacity: 1.0,
-                  fillOpacity: 1.0
-                })
-              }, //end pointToLayer
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
 
-              //restyle on mouseover, reset style on mouseout
-              onEachFeature: function(feature, layer) {
+          var initLatLngs = layer.feature.geometry.coordinates[0];
 
-                var props = layer.feature.properties;
+          reversedLatLngs = [];
 
-                //define what happens on mouseover
-                layer.on("mouseover", function(e) {
-                  layer.setStyle({
-                    radius: 3,
-                    fillColor: "yellow",
-                    color: "#3978BF",
-                    weight: 0.5,
-                    opacity: 1.0,
-                    fillOpacity: 1.0,
-                  });
-                });
+          for (var i = 0; i < initLatLngs.length; i++) {
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
 
-                //bind a popup window to each circle marker
-                layer.bindPopup("<h4 style='font-size:12px'>Event Name" +
-                  "<br>" + props.New_Date +
-                  "<br>Notes: " + props.Notes + "</h4>"
-                );
+          reversedLatLngsProcessed2.push(reversedLatLngs);
 
-                //define what happens on mouseout
-                layer.on("mouseout", function(e) {
+          var props = layer.feature.properties; // Get the properties of the layer features
 
-                  //style the points
-                  layer.setStyle({
-                    radius: 3,
-                    fillColor: "black",
-                    color: "orange",
-                    weight: 0.5,
-                    opacity: 1.0,
-                    fillOpacity: 1.0,
-                  });
+          // Bind a popup window to the layer
+          layer.bindPopup("<h3>" + props + "</h3>" +
+            "<h4>Information:" +
+            "<br>" + props + "</h4>"
+          );
 
-                });
+          layer.on({
 
-              } //end onEachFeature
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
 
-            }); // End DataTwo
-      */
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataTwo.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End second layer
+
+      var dataThree = L.geoJson(data3, { // Define the third data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: "darkblue",
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0];
+
+          reversedLatLngs = [];
+
+          for (var i = 0; i < initLatLngs.length; i++) {
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed3.push(reversedLatLngs);
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h3>" + props + "</h3>" +
+            "<h4>Information:" +
+            "<br>" + props + "</h4>"
+          );
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataThree.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End third layer
+
+      var dataFour = L.geoJson(data4, { // Define the fourth data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: "darkblue",
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0];
+
+          reversedLatLngs = [];
+
+          for (var i = 0; i < initLatLngs.length; i++) {
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed4.push(reversedLatLngs);
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h3>" + props + "</h3>" +
+            "<h4>Information:" +
+            "<br>" + props + "</h4>"
+          );
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataFour.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End fourth layer
+
+      var dataFive = L.geoJson(data5, { // Define the fifth data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: "darkblue",
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0]; // Get the array of all coordinates (in original lng,lat format)
+
+          reversedLatLngs = []; // Create an empty array into which you will push reversed coordinates in lat,lng format
+
+          for (var i = 0; i < initLatLngs.length; i++) { // For each coordinate in initLatLngs...
+            //...switch from lng,lat to lat,lng format and push to reversedLatLngs array
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed5.push(reversedLatLngs); // Push the reversed coordinates to the reversedLatLngsProcessed array
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h3>" + props + "</h3>" +
+            "<h4>Information:" +
+            "<br>" + props + "</h4>"
+          );
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataFive.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End fifth layer
+
+      var dataSix = L.geoJson(data6, { // Define the sixth data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: "darkblue",
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0]; // Get the array of all coordinates (in original lng,lat format)
+
+          reversedLatLngs = []; // Create an empty array into which you will push reversed coordinates in lat,lng format
+
+          for (var i = 0; i < initLatLngs.length; i++) { // For each coordinate in initLatLngs...
+            //...switch from lng,lat to lat,lng format and push to reversedLatLngs array
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed6.push(reversedLatLngs); // Push the reversed coordinates to the reversedLatLngsProcessed array
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h3>" + props + "</h3>" +
+            "<h4>Information:" +
+            "<br>" + props + "</h4>"
+          );
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataSix.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End sixth layer
+
+      var dataSeven = L.geoJson(data7, { // Define the seventh data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: "darkblue",
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0]; // Get the array of all coordinates (in original lng,lat format)
+
+          reversedLatLngs = []; // Create an empty array into which you will push reversed coordinates in lat,lng format
+
+          for (var i = 0; i < initLatLngs.length; i++) { // For each coordinate in initLatLngs...
+            //...switch from lng,lat to lat,lng format and push to reversedLatLngs array
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed7.push(reversedLatLngs); // Push the reversed coordinates to the reversedLatLngsProcessed array
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h3>" + props + "</h3>" +
+            "<h4>Information:" +
+            "<br>" + props + "</h4>"
+          );
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataSeven.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End seventh layer
+
+      var dataEight = L.geoJson(data8, { // Define the eighth data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: "darkblue",
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0]; // Get the array of all coordinates (in original lng,lat format)
+
+          reversedLatLngs = []; // Create an empty array into which you will push reversed coordinates in lat,lng format
+
+          for (var i = 0; i < initLatLngs.length; i++) { // For each coordinate in initLatLngs...
+            //...switch from lng,lat to lat,lng format and push to reversedLatLngs array
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed8.push(reversedLatLngs); // Push the reversed coordinates to the reversedLatLngsProcessed array
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h3>" + props + "</h3>" +
+            "<h4>Information:" +
+            "<br>" + props + "</h4>"
+          );
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataEight.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End eighth layer
+
+      var dataNine = L.geoJson(data9, { // Define the ninth data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: "darkblue",
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0]; // Get the array of all coordinates (in original lng,lat format)
+
+          reversedLatLngs = []; // Create an empty array into which you will push reversed coordinates in lat,lng format
+
+          for (var i = 0; i < initLatLngs.length; i++) { // For each coordinate in initLatLngs...
+            //...switch from lng,lat to lat,lng format and push to reversedLatLngs array
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed9.push(reversedLatLngs); // Push the reversed coordinates to the reversedLatLngsProcessed array
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h3>" + props + "</h3>" +
+            "<h4>Information:" +
+            "<br>" + props + "</h4>"
+          );
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataNine.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End ninth layer
+
+      var dataTen = L.geoJson(data10, { // Define the tenth data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: "darkblue",
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0]; // Get the array of all coordinates (in original lng,lat format)
+
+          reversedLatLngs = []; // Create an empty array into which you will push reversed coordinates in lat,lng format
+
+          for (var i = 0; i < initLatLngs.length; i++) { // For each coordinate in initLatLngs...
+            //...switch from lng,lat to lat,lng format and push to reversedLatLngs array
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed10.push(reversedLatLngs); // Push the reversed coordinates to the reversedLatLngsProcessed array
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h3>" + props + "</h3>" +
+            "<h4>Information:" +
+            "<br>" + props + "</h4>"
+          );
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataTen.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End tenth layer
+
+      var dataEleven = L.geoJson(data11, { // Define the eleventh data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: "darkblue",
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0]; // Get the array of all coordinates (in original lng,lat format)
+
+          reversedLatLngs = []; // Create an empty array into which you will push reversed coordinates in lat,lng format
+
+          for (var i = 0; i < initLatLngs.length; i++) { // For each coordinate in initLatLngs...
+            //...switch from lng,lat to lat,lng format and push to reversedLatLngs array
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed11.push(reversedLatLngs); // Push the reversed coordinates to the reversedLatLngsProcessed array
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h3>" + props + "</h3>" +
+            "<h4>Information:" +
+            "<br>" + props + "</h4>"
+          );
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataEleven.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End eleventh layer
+
+      var dataTwelve = L.geoJson(data12, { // Define the twelfth data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: "darkblue",
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0]; // Get the array of all coordinates (in original lng,lat format)
+
+          reversedLatLngs = []; // Create an empty array into which you will push reversed coordinates in lat,lng format
+
+          for (var i = 0; i < initLatLngs.length; i++) { // For each coordinate in initLatLngs...
+            //...switch from lng,lat to lat,lng format and push to reversedLatLngs array
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed12.push(reversedLatLngs); // Push the reversed coordinates to the reversedLatLngsProcessed array
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h3>" + props + "</h3>" +
+            "<h4>Information:" +
+            "<br>" + props + "</h4>"
+          );
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataTwelve.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End twelfth layer
+
+      var dataThirteen = L.geoJson(data13, { // Define the thirteenth data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: "darkblue",
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0]; // Get the array of all coordinates (in original lng,lat format)
+
+          reversedLatLngs = []; // Create an empty array into which you will push reversed coordinates in lat,lng format
+
+          for (var i = 0; i < initLatLngs.length; i++) { // For each coordinate in initLatLngs...
+            //...switch from lng,lat to lat,lng format and push to reversedLatLngs array
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed13.push(reversedLatLngs); // Push the reversed coordinates to the reversedLatLngsProcessed array
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h3>" + props + "</h3>" +
+            "<h4>Information:" +
+            "<br>" + props + "</h4>"
+          );
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataThirteen.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End thirteenth layer
+
+      var dataFourteen = L.geoJson(data14, { // Define the fourteenth data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: "darkblue",
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0]; // Get the array of all coordinates (in original lng,lat format)
+
+          reversedLatLngs = []; // Create an empty array into which you will push reversed coordinates in lat,lng format
+
+          for (var i = 0; i < initLatLngs.length; i++) { // For each coordinate in initLatLngs...
+            //...switch from lng,lat to lat,lng format and push to reversedLatLngs array
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed14.push(reversedLatLngs); // Push the reversed coordinates to the reversedLatLngsProcessed array
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h3>" + props + "</h3>" +
+            "<h4>Information:" +
+            "<br>" + props + "</h4>"
+          );
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataFourteen.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End fourteenth layer
+
+      var dataFifteen = L.geoJson(data15, { // Define the fifteenth data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: "darkblue",
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0]; // Get the array of all coordinates (in original lng,lat format)
+
+          reversedLatLngs = []; // Create an empty array into which you will push reversed coordinates in lat,lng format
+
+          for (var i = 0; i < initLatLngs.length; i++) { // For each coordinate in initLatLngs...
+            //...switch from lng,lat to lat,lng format and push to reversedLatLngs array
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed15.push(reversedLatLngs); // Push the reversed coordinates to the reversedLatLngsProcessed array
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h3>" + props + "</h3>" +
+            "<h4>Information:" +
+            "<br>" + props + "</h4>"
+          );
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataFifteen.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End fifteenth layer
+
+      var dataSixteen = L.geoJson(data16, { // Define the sixteenth data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: "darkblue",
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0]; // Get the array of all coordinates (in original lng,lat format)
+
+          reversedLatLngs = []; // Create an empty array into which you will push reversed coordinates in lat,lng format
+
+          for (var i = 0; i < initLatLngs.length; i++) { // For each coordinate in initLatLngs...
+            //...switch from lng,lat to lat,lng format and push to reversedLatLngs array
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed16.push(reversedLatLngs); // Push the reversed coordinates to the reversedLatLngsProcessed array
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h3>" + props + "</h3>" +
+            "<h4>Information:" +
+            "<br>" + props + "</h4>"
+          );
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataSixteen.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End sixteenth layer
+
+      var dataSeventeen = L.geoJson(data17, { // Define the seventeenth data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: "darkblue",
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0]; // Get the array of all coordinates (in original lng,lat format)
+
+          reversedLatLngs = []; // Create an empty array into which you will push reversed coordinates in lat,lng format
+
+          for (var i = 0; i < initLatLngs.length; i++) { // For each coordinate in initLatLngs...
+            //...switch from lng,lat to lat,lng format and push to reversedLatLngs array
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed17.push(reversedLatLngs); // Push the reversed coordinates to the reversedLatLngsProcessed array
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h3>" + props + "</h3>" +
+            "<h4>Information:" +
+            "<br>" + props + "</h4>"
+          );
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataSeventeen.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End seventeenth layer
+
       // Fit the map to the extent of the first data layer upon drawing
-      map.fitBounds(dataOne.getBounds());
+      //map.fitBounds(dataOne.getBounds());
 
-      // Define the baselayers for the layer control
-      var baselayers = {
-        "1872": basemap1872,
-        "1886": basemap1886,
-        "Contemporary": contemporaryBasemap,
+      // Get the number of line segments in each line geojson
+      var multiplier1 = reversedLatLngsProcessed1[0].length - 1;
+      var multiplier2 = reversedLatLngsProcessed2[0].length - 1;
+      var multiplier3 = reversedLatLngsProcessed3[0].length - 1;
+      var multiplier4 = reversedLatLngsProcessed4[0].length - 1;
+      var multiplier5 = reversedLatLngsProcessed5[0].length - 1;
+      var multiplier6 = reversedLatLngsProcessed6[0].length - 1;
+      var multiplier7 = reversedLatLngsProcessed7[0].length - 1;
+      var multiplier8 = reversedLatLngsProcessed8[0].length - 1;
+      var multiplier9 = reversedLatLngsProcessed9[0].length - 1;
+      var multiplier10 = reversedLatLngsProcessed10[0].length - 1;
+      var multiplier11 = reversedLatLngsProcessed11[0].length - 1;
+      var multiplier12 = reversedLatLngsProcessed12[0].length - 1;
+      var multiplier13 = reversedLatLngsProcessed13[0].length - 1;
+      var multiplier14 = reversedLatLngsProcessed14[0].length - 1;
+      var multiplier15 = reversedLatLngsProcessed15[0].length - 1;
+      var multiplier16 = reversedLatLngsProcessed16[0].length - 1;
+      var multiplier17 = reversedLatLngsProcessed17[0].length - 1;
+
+      // Assign a speed for the markers to travel over each line segment
+      var speeds1 = ((', 100000'.repeat(multiplier1)).replace(', ', '')).split(', ').map(Number);
+      var speeds2 = ((', 10000'.repeat(multiplier2)).replace(', ', '')).split(', ').map(Number);
+      var speeds3 = ((', 10000'.repeat(multiplier3)).replace(', ', '')).split(', ').map(Number);
+      var speeds4 = ((', 10000'.repeat(multiplier4)).replace(', ', '')).split(', ').map(Number);
+      var speeds5 = ((', 10000'.repeat(multiplier5)).replace(', ', '')).split(', ').map(Number);
+      var speeds6 = ((', 10000'.repeat(multiplier6)).replace(', ', '')).split(', ').map(Number);
+      var speeds7 = ((', 10000'.repeat(multiplier7)).replace(', ', '')).split(', ').map(Number);
+      var speeds8 = ((', 10000'.repeat(multiplier8)).replace(', ', '')).split(', ').map(Number);
+      var speeds9 = ((', 10000'.repeat(multiplier9)).replace(', ', '')).split(', ').map(Number);
+      var speeds10 = ((', 10000'.repeat(multiplier10)).replace(', ', '')).split(', ').map(Number);
+      var speeds11 = ((', 10000'.repeat(multiplier11)).replace(', ', '')).split(', ').map(Number);
+      var speeds12 = ((', 10000'.repeat(multiplier11)).replace(', ', '')).split(', ').map(Number);
+      var speeds13 = ((', 10000'.repeat(multiplier13)).replace(', ', '')).split(', ').map(Number);
+      var speeds14 = ((', 10000'.repeat(multiplier14)).replace(', ', '')).split(', ').map(Number);
+      var speeds15 = ((', 10000'.repeat(multiplier15)).replace(', ', '')).split(', ').map(Number);
+      var speeds16 = ((', 10000'.repeat(multiplier16)).replace(', ', '')).split(', ').map(Number);
+      var speeds17 = ((', 10000'.repeat(multiplier16)).replace(', ', '')).split(', ').map(Number);
+
+      //set up a customized icon to use for the streetcar markers
+      var customIcon = L.ExtraMarkers.icon({
+        icon: 'fas fa-train',
+        prefix: 'fa',
+        markerColor: 'blue',
+        iconColor: 'white'
+      });
+
+      var marker1 = L.Marker.movingMarker(reversedLatLngsProcessed1[0], speeds1);
+      marker1.setIcon(customIcon);
+      marker1.once('click', function() {
+        marker1.start();
+        marker1.closePopup();
+        marker1.unbindPopup();
+        marker1.on('click', function() {
+          if (marker1.isRunning()) {
+            marker1.pause();
+          } else {
+            marker1.start();
+          }
+        });
+        setTimeout(function() {
+          marker1.bindPopup('<b>State Street</b>').openPopup();
+        }, 100000);
+      });
+
+      marker1.bindPopup('<b>State Street</b>', {
+        closeOnClick: false
+      });
+      marker1.openPopup();
+
+      var marker2 = L.Marker.movingMarker(reversedLatLngsProcessed2[0], speeds2);
+      marker2.setIcon(customIcon);
+      marker2.once('click', function() {
+        marker2.start();
+        marker2.closePopup();
+        marker2.unbindPopup();
+        marker2.on('click', function() {
+          if (marker2.isRunning()) {
+            marker2.pause();
+          } else {
+            marker2.start();
+          }
+        });
+        setTimeout(function() {
+          marker2.bindPopup('<b>Randolph, Bryan, Lake, and Madison Streets</b>').openPopup();
+        }, 10000);
+      });
+
+      marker2.bindPopup('<b>Randolph, Bryan, Lake, and Madison Streets</b>', {
+        closeOnClick: false
+      });
+      marker2.openPopup();
+
+      var marker3 = L.Marker.movingMarker(reversedLatLngsProcessed3[0], speeds3);
+      marker3.setIcon(customIcon);
+      marker3.once('click', function() {
+        marker3.start();
+        marker3.closePopup();
+        marker3.unbindPopup();
+        marker3.on('click', function() {
+          if (marker3.isRunning()) {
+            marker3.pause();
+          } else {
+            marker3.start();
+          }
+        });
+        setTimeout(function() {
+          marker3.bindPopup('<b>Archer Avenue</b>').openPopup();
+        }, 10000);
+      });
+
+      marker3.bindPopup('<b>Archer Avenue</b>', {
+        closeOnClick: false
+      });
+      marker3.openPopup();
+
+      var marker4 = L.Marker.movingMarker(reversedLatLngsProcessed4[0], speeds4);
+      marker4.setIcon(customIcon);
+      marker4.once('click', function() {
+        marker4.start();
+        marker4.closePopup();
+        marker4.unbindPopup();
+        marker4.on('click', function() {
+          if (marker4.isRunning()) {
+            marker4.pause();
+          } else {
+            marker4.start();
+          }
+        });
+        setTimeout(function() {
+          marker4.bindPopup('<b>41st Street and Union Stock Yards</b>').openPopup();
+        }, 10000);
+      });
+
+      marker4.bindPopup('<b>41st Street and Union Stock Yards</b>', {
+        closeOnClick: false
+      });
+      marker4.openPopup();
+
+      var marker5 = L.Marker.movingMarker(reversedLatLngsProcessed5[0], speeds5);
+      marker5.setIcon(customIcon);
+      marker5.once('click', function() {
+        marker5.start();
+        marker5.closePopup();
+        marker5.unbindPopup();
+        marker5.on('click', function() {
+          if (marker5.isRunning()) {
+            marker5.pause();
+          } else {
+            marker5.start();
+          }
+        });
+        setTimeout(function() {
+          marker5.bindPopup('<b>Clark Street</b>').openPopup();
+        }, 10000);
+      });
+
+      marker5.bindPopup('<b>Clark Street</b>', {
+        closeOnClick: false
+      });
+      marker5.openPopup();
+
+      var marker6 = L.Marker.movingMarker(reversedLatLngsProcessed6[0], speeds6);
+      marker6.setIcon(customIcon);
+      marker6.once('click', function() {
+        marker6.start();
+        marker6.closePopup();
+        marker6.unbindPopup();
+        marker6.on('click', function() {
+          if (marker6.isRunning()) {
+            marker6.pause();
+          } else {
+            marker6.start();
+          }
+        });
+        setTimeout(function() {
+          marker6.bindPopup('<b>Halsted and Milwaukee Streets</b>').openPopup();
+        }, 10000);
+      });
+
+      marker6.bindPopup('<b>Halsted and Milwaukee Streets</b>', {
+        closeOnClick: false
+      });
+      marker6.openPopup();
+
+      var marker7 = L.Marker.movingMarker(reversedLatLngsProcessed7[0], speeds7);
+      marker7.setIcon(customIcon);
+      marker7.once('click', function() {
+        marker7.start();
+        marker7.closePopup();
+        marker7.unbindPopup();
+        marker7.on('click', function() {
+          if (marker7.isRunning()) {
+            marker7.pause();
+          } else {
+            marker7.start();
+          }
+        });
+        setTimeout(function() {
+          marker7.bindPopup('<b>Chicago Avenue</b>').openPopup();
+        }, 10000);
+      });
+
+      marker7.bindPopup('<b>Chicago Avenue</b>', {
+        closeOnClick: false
+      });
+      marker7.openPopup();
+
+      var marker8 = L.Marker.movingMarker(reversedLatLngsProcessed8[0], speeds8);
+      marker8.setIcon(customIcon);
+      marker8.once('click', function() {
+        marker8.start();
+        marker8.closePopup();
+        marker8.unbindPopup();
+        marker8.on('click', function() {
+          if (marker8.isRunning()) {
+            marker8.pause();
+          } else {
+            marker8.start();
+          }
+        });
+        setTimeout(function() {
+          marker8.bindPopup('<b>Halsted St. and Blue Island Ave.</b>').openPopup();
+        }, 10000);
+      });
+
+      marker8.bindPopup('<b>Halsted St. and Blue Island Ave.</b>', {
+        closeOnClick: false
+      });
+      marker8.openPopup();
+
+      var marker9 = L.Marker.movingMarker(reversedLatLngsProcessed9[0], speeds9);
+      marker9.setIcon(customIcon);
+      marker9.once('click', function() {
+        marker9.start();
+        marker9.closePopup();
+        marker9.unbindPopup();
+        marker9.on('click', function() {
+          if (marker9.isRunning()) {
+            marker9.pause();
+          } else {
+            marker9.start();
+          }
+        });
+        setTimeout(function() {
+          marker9.bindPopup('<b>Division, Clybourn, and Larrabee Streets</b>').openPopup();
+        }, 10000);
+      });
+
+      marker9.bindPopup('<b>Division, Clybourn, and Larrabee Streets</b>', {
+        closeOnClick: false
+      });
+      marker9.openPopup();
+
+      var marker10 = L.Marker.movingMarker(reversedLatLngsProcessed10[0], speeds10);
+      marker10.setIcon(customIcon);
+      marker10.once('click', function() {
+        marker10.start();
+        marker10.closePopup();
+        marker10.unbindPopup();
+        marker10.on('click', function() {
+          if (marker10.isRunning()) {
+            marker10.pause();
+          } else {
+            marker10.start();
+          }
+        });
+        setTimeout(function() {
+          marker10.bindPopup('<b>Sedgwick Street</b>').openPopup();
+        }, 10000);
+      });
+
+      marker10.bindPopup('<b>Sedgwick Street</b>', {
+        closeOnClick: false
+      });
+      marker10.openPopup();
+
+      var marker11 = L.Marker.movingMarker(reversedLatLngsProcessed11[0], speeds11);
+      marker11.setIcon(customIcon);
+      marker11.once('click', function() {
+        marker11.start();
+        marker11.closePopup();
+        marker11.unbindPopup();
+        marker11.on('click', function() {
+          if (marker11.isRunning()) {
+            marker11.pause();
+          } else {
+            marker11.start();
+          }
+        });
+        setTimeout(function() {
+          marker11.bindPopup('<b>22nd St. and Cottage Grove Ave.</b>').openPopup();
+        }, 10000);
+      });
+
+      marker11.bindPopup('<b>22nd St. and Cottage Grove Ave.</b>', {
+        closeOnClick: false
+      });
+      marker11.openPopup();
+
+      var marker12 = L.Marker.movingMarker(reversedLatLngsProcessed12[0], speeds12);
+      marker12.setIcon(customIcon);
+      marker12.once('click', function() {
+        marker12.start();
+        marker12.closePopup();
+        marker12.unbindPopup();
+        marker12.on('click', function() {
+          if (marker12.isRunning()) {
+            marker12.pause();
+          } else {
+            marker12.start();
+          }
+        });
+        setTimeout(function() {
+          marker12.bindPopup('<b>Fifth Avenue</b>').openPopup();
+        }, 10000);
+      });
+
+      marker12.bindPopup('<b>Fifth Avenue</b>', {
+        closeOnClick: false
+      });
+      marker12.openPopup();
+
+      var marker13 = L.Marker.movingMarker(reversedLatLngsProcessed13[0], speeds13);
+      marker13.setIcon(customIcon);
+      marker13.once('click', function() {
+        marker13.start();
+        marker13.closePopup();
+        marker13.unbindPopup();
+        marker13.on('click', function() {
+          if (marker13.isRunning()) {
+            marker13.pause();
+          } else {
+            marker13.start();
+          }
+        });
+        setTimeout(function() {
+          marker13.bindPopup('<b>Eighteenth St. and Indiana Ave.</b>').openPopup();
+        }, 10000);
+      });
+
+      marker13.bindPopup('<b>Eighteenth St. and Indiana Ave.</b>', {
+        closeOnClick: false
+      });
+      marker13.openPopup();
+
+      var marker14 = L.Marker.movingMarker(reversedLatLngsProcessed14[0], speeds14);
+      marker14.setIcon(customIcon);
+      marker14.once('click', function() {
+        marker14.start();
+        marker14.closePopup();
+        marker14.unbindPopup();
+        marker14.on('click', function() {
+          if (marker14.isRunning()) {
+            marker14.pause();
+          } else {
+            marker14.start();
+          }
+        });
+        setTimeout(function() {
+          marker14.bindPopup('<b>Clinton, 12th, Jefferson, & Van Buren Streets</b>').openPopup();
+        }, 10000);
+      });
+
+      marker14.bindPopup('<b>Clinton, 12th, Jefferson, & Van Buren Streets</b>', {
+        closeOnClick: false
+      });
+      marker14.openPopup();
+
+      var marker15 = L.Marker.movingMarker(reversedLatLngsProcessed15[0], speeds15);
+      marker15.setIcon(customIcon);
+      marker15.once('click', function() {
+        marker15.start();
+        marker15.closePopup();
+        marker15.unbindPopup();
+        marker15.on('click', function() {
+          if (marker15.isRunning()) {
+            marker15.pause();
+          } else {
+            marker15.start();
+          }
+        });
+        setTimeout(function() {
+          marker15.bindPopup('<b>Jefferson and Meagher Streets</b>').openPopup();
+        }, 10000);
+      });
+
+      marker15.bindPopup('<b>Jefferson and Meagher Streets</b>', {
+        closeOnClick: false
+      });
+      marker15.openPopup();
+
+      var marker16 = L.Marker.movingMarker(reversedLatLngsProcessed16[0], speeds16);
+      marker16.setIcon(customIcon);
+      marker16.once('click', function() {
+        marker16.start();
+        marker16.closePopup();
+        marker16.unbindPopup();
+        marker16.on('click', function() {
+          if (marker16.isRunning()) {
+            marker16.pause();
+          } else {
+            marker16.start();
+          }
+        });
+        setTimeout(function() {
+          marker16.bindPopup('<b>South Western Road</b>').openPopup();
+        }, 10000);
+      });
+
+      marker16.bindPopup('<b>South Western Road</b>', {
+        closeOnClick: false
+      });
+      marker16.openPopup();
+
+      var marker17 = L.Marker.movingMarker(reversedLatLngsProcessed17[0], speeds17);
+      marker17.setIcon(customIcon);
+      marker17.once('click', function() {
+        marker17.start();
+        marker17.closePopup();
+        marker17.unbindPopup();
+        marker17.on('click', function() {
+          if (marker17.isRunning()) {
+            marker17.pause();
+          } else {
+            marker17.start();
+          }
+        });
+        setTimeout(function() {
+          marker17.bindPopup('<b>Market Street</b>').openPopup();
+        }, 10000);
+      });
+
+      marker17.bindPopup('<b>Market Street</b>', {
+        closeOnClick: false
+      });
+      marker17.openPopup();
+
+      var groupedOverlays = {
+        "<span class='controlHeading'>Base Maps</span>": {
+          "1872": basemap1872,
+          "1886": basemap1886,
+          "Contemporary": contemporaryBasemap,
+        },
+        "<span class='controlHeading'>State</span>": {
+          "Line": dataOne,
+          "Marker": marker1,
+        },
+        "<span class='controlHeading'>Randolph -- Madison</span>": {
+          "Line": dataTwo,
+          "Marker": marker2,
+        },
+        "<span class='controlHeading'>Archer</span>": {
+          "Line": dataThree,
+          "Marker": marker3,
+        },
+        "<span class='controlHeading'>41st -- Stock Yards</span>": {
+          "Line": dataFour,
+          "Marker": marker4,
+        },
+        "<span class='controlHeading'>Clark</span>": {
+          "Line": dataFive,
+          "Marker": marker5,
+        },
+        "<span class='controlHeading'>Halsted & Milwaukee</span>": {
+          "Line": dataSix,
+          "Marker": marker6,
+        },
+        "<span class='controlHeading'>Chicago</span>": {
+          "Line": dataSeven,
+          "Marker": marker7,
+        },
+        "<span class='controlHeading'>Halsted & Blue Island</span>": {
+          "Line": dataEight,
+          "Marker": marker8,
+        },
+        "<span class='controlHeading'>Divison -- Larrabee</span>": {
+          "Line": dataNine,
+          "Marker": marker9,
+        },
+        "<span class='controlHeading'>Sedgwick</span>": {
+          "Line": dataTen,
+          "Marker": marker10,
+        },
+        "<span class='controlHeading'>22nd and Cottage Grove</span>": {
+          "Line": dataEleven,
+          "Marker": marker11,
+        },
+        "<span class='controlHeading'>Fifth</span>": {
+          "Line": dataTwelve,
+          "Marker": marker12,
+        },
+        "<span class='controlHeading'>Eighteenth & Indiana</span>": {
+          "Line": dataThirteen,
+          "Marker": marker13,
+        },
+        "<span class='controlHeading'>Clinton -- Van Buren</span>": {
+          "Line": dataFourteen,
+          "Marker": marker14,
+        },
+        "<span class='controlHeading'>Jefferson & Meagher</span>": {
+          "Line": dataFifteen,
+          "Marker": marker15,
+        },
+        "<span class='controlHeading'>South Western</span>": {
+          "Line": dataSixteen,
+          "Marker": marker16,
+        },
+        "<span class='controlHeading'>Market</span>": {
+          "Line": dataSeventeen,
+          "Marker": marker17,
+        },
       };
 
-      // Define the overlay layers for the layer control
-      var overlays = {
-        "First Data Layer": dataOne,
-        //"Second Data Layer": dataTwo,
+      var options = {
+        // Make the "Base Maps" group exclusive (use radio inputs)
+        exclusiveGroups: ["<span class='controlHeading'>Base Maps</span>"],
+        // Show a checkbox next to non-exclusive group labels for toggling all
+        groupCheckboxes: true,
+        collapsed: true
       };
 
-      // Send the layers to the layer control
-      L.control.layers(baselayers, overlays, {
-        collapsed: false,
-      }).addTo(map);
+      // Use the custom grouped layer control, not "L.control.layers"
+      L.control.groupedLayers(null, groupedOverlays, options).addTo(map);
+
+      $('.leaflet-control-layers-group-label').each(function(index) {
+        var self = $(this),
+          trigger = $('<label>', {
+            class: 'trigger',
+            for: 'dropdown-trigger-' + index
+          }).insertBefore(self),
+          radio = $('<input>', {
+            type: 'radio',
+            class: 'trigger-radio',
+            name: 'dropdown-control',
+            id: 'dropdown-trigger-' + index
+          }).insertBefore(trigger);
+      });
 
     }; //end drawMap function
   </script>
