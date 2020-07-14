@@ -168,11 +168,12 @@
       .defer(d3.json, 'data/Jefferson_Meagher.geojson') // Add more files if needed
       .defer(d3.json, 'data/South_Western.geojson') // Add more files if needed
       .defer(d3.json, 'data/Market.geojson') // Add more files if needed
+      .defer(d3.json, 'data/geocoded_stables_final.geojson')
       .await(drawMap); // Load the layers after the map loads
 
     // Provide instructions for drawing the map
     function drawMap(err, data1, data2, data3, data4, data5, data6, data7, data8,
-      data9, data10, data11, data12, data13, data14, data15, data16, data17) {
+      data9, data10, data11, data12, data13, data14, data15, data16, data17, stables) {
 
       // Create empty arrays for pushing up lat lng coordinates from each street car geojson
       var reversedLatLngsProcessed1 = [];
@@ -1253,7 +1254,7 @@
 
       //set up a customized icon to use for the streetcar markers
       var customIcon = L.ExtraMarkers.icon({
-        icon: 'fas fa-train',
+        icon: 'fas fa-horse',
         prefix: 'fa',
         markerColor: 'blue',
         iconColor: 'white'
@@ -1650,6 +1651,63 @@
       });
       marker17.openPopup();
 
+      var pointData = L.geoJson(stables, { // Define the first data layer with a variable
+
+        pointToLayer: function(feature, ll) {
+
+          //style the points as circle markers
+          return L.circleMarker(ll, {
+            radius: 5,
+            fillColor: "black",
+            color: "orange",
+            weight: 0.5,
+            opacity: 1.0,
+            fillOpacity: 1.0
+          })
+        }, //end pointToLayer
+
+        //restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var props = layer.feature.properties;
+
+          //define what happens on mouseover
+          layer.on("mouseover", function(e) {
+            layer.setStyle({
+              radius: 3,
+              fillColor: "yellow",
+              color: "#3978BF",
+              weight: 0.5,
+              opacity: 1.0,
+              fillOpacity: 1.0,
+            });
+          });
+
+          //bind a popup window to each circle marker
+          layer.bindPopup("<h4 style='font-size:12px'>" + props.uniqueid +
+            "<br>" + props.streetaddress +
+            "<br>Notes: " + props.Notes + "</h4>"
+          );
+
+          //define what happens on mouseout
+          layer.on("mouseout", function(e) {
+
+            //style the points
+            layer.setStyle({
+              radius: 5,
+              fillColor: "black",
+              color: "orange",
+              weight: 0.5,
+              opacity: 1.0,
+              fillOpacity: 1.0,
+            });
+
+          });
+
+        } //end onEachFeature
+
+      }); // End pointData
+
       var groupedOverlays = {
         "<span class='controlHeading'>Base Maps</span>": {
           "1872": basemap1872,
@@ -1723,6 +1781,9 @@
         "<span class='controlHeading'>Market</span>": {
           "Line": dataSeventeen,
           "Marker": marker17,
+        },
+        "<span class='controlHeading'>Stables</span>": {
+          "Stables": pointData,
         },
       };
 
