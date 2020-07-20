@@ -11,7 +11,7 @@
   <!-- Link the css files -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css">
   <!-- for icon markers -->
-  <link rel="stylesheet" href="css/leaflet.extra-markers.min.css">
+  <!--<link rel="stylesheet" href="css/leaflet.extra-markers.min.css">-->
   <!-- for grouped layer control-->
   <link rel="stylesheet" href="css/leaflet.groupedlayercontrol.css">
 
@@ -1249,8 +1249,8 @@
       var customIcon = L.ExtraMarkers.icon({
         //icon: 'fas fa-horse',
         //prefix: 'fa',
-        markerColor: 'blue-dark',
-        innerHTML: '<img src="img/icon_horsecar_blue.png" width="30" height="30">' // overrides icon with selected image
+        //markerColor: 'blue-dark',
+        innerHTML: '<img src="img/icon_horsecar_blue.png" width="60" height="50" style="vertical-align:bottom; position: relative; right:13px;">' // overrides icon with selected image
         //iconColor: 'white'
       });
 
@@ -1648,7 +1648,7 @@
       // Declare a variable for your custom icon and style
       var stableIcon = L.icon({
         iconUrl: 'img/icon_stable_gray.png', // local path to the desired icon image file
-        iconSize:     [15, 15], // size of the icon
+        iconSize:     [20, 20], // size of the icon
         iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
         popupAnchor:  [7, 0] // point from which the popup should open relative to the iconAnchor
       });
