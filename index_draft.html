@@ -1252,12 +1252,12 @@
       var speeds16 = ((', 10000'.repeat(multiplier16)).replace(', ', '')).split(', ').map(Number);
       var speeds17 = ((', 10000'.repeat(multiplier16)).replace(', ', '')).split(', ').map(Number);
 
-      //set up a customized icon to use for the streetcar markers
       var customIcon = L.ExtraMarkers.icon({
-        icon: 'fas fa-horse',
-        prefix: 'fa',
-        markerColor: 'blue',
-        iconColor: 'white'
+        //icon: 'fas fa-horse',
+        //prefix: 'fa',
+        markerColor: 'blue-dark',
+        innerHTML: '<img src="img/icon_horsecar_blue.png" width="30" height="30">' // overrides icon with selected image
+        //iconColor: 'white'
       });
 
       var marker1 = L.Marker.movingMarker(reversedLatLngsProcessed1[0], speeds1);
@@ -1651,10 +1651,22 @@
       });
       marker17.openPopup();
 
-      var pointData = L.geoJson(stables, { // Define the first data layer with a variable
+      // Declare a variable for your custom icon and style
+      var stableIcon = L.icon({
+        iconUrl: 'img/icon_stable_gray.png', // local path to the desired icon image file
+        iconSize:     [15, 15], // size of the icon
+        iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
+        popupAnchor:  [7, 0] // point from which the popup should open relative to the iconAnchor
+      });
+
+      var pointData = L.geoJson(stables, { // Define the point data layer with a variable
 
         pointToLayer: function(feature, ll) {
-
+          //style the points with the stableIcon
+          return L.marker(ll, {
+            icon: stableIcon
+          })
+        /*
           //style the points as circle markers
           return L.circleMarker(ll, {
             radius: 5,
@@ -1664,17 +1676,19 @@
             opacity: 1.0,
             fillOpacity: 1.0
           })
+        */
         }, //end pointToLayer
 
         //restyle on mouseover, reset style on mouseout
         onEachFeature: function(feature, layer) {
 
+          //declare a variable to point to your geojson properties
           var props = layer.feature.properties;
-
+/*
           //define what happens on mouseover
           layer.on("mouseover", function(e) {
             layer.setStyle({
-              radius: 3,
+              radius: 5,
               fillColor: "yellow",
               color: "#3978BF",
               weight: 0.5,
@@ -1682,13 +1696,13 @@
               fillOpacity: 1.0,
             });
           });
-
+*/
           //bind a popup window to each circle marker
           layer.bindPopup("<h4 style='font-size:12px'>" + props.uniqueid +
             "<br>" + props.streetaddress +
             "<br>Notes: " + props.Notes + "</h4>"
           );
-
+/*
           //define what happens on mouseout
           layer.on("mouseout", function(e) {
 
@@ -1703,7 +1717,7 @@
             });
 
           });
-
+*/
         } //end onEachFeature
 
       }); // End pointData
