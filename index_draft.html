@@ -4,12 +4,12 @@
 <head>
   <meta charset="utf-8">
   <!-- The title of the web page -->
-  <title>Chicago Horse Railways 1872</title>
+  <title>Chicago Epizoozy 1872</title>
 
-  <!-- Link to Montserrat font -->
-  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT&display=swap" rel="stylesheet">
+  <!-- Link to fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+
   <!-- Link the css files -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css">
 
@@ -28,7 +28,7 @@
       position: fixed;
       top: 0px;
       width: 100%;
-      height: 52px;
+      height: 75px;
       background-color: #000000;
       box-shadow: 0px 0px 5px black;
       z-index: 800;
@@ -36,9 +36,9 @@
 
     /* Set font styles */
     h1 {
-      font-family: 'Raleway', sans-serif;
+      font-family: 'Lato', sans-serif;
       color: white;
-      font-size: 18px;
+      font-size: 22px;
       display: inline-block;
       margin-top: 0.5em;
       margin-bottom: 0.0em;
@@ -49,9 +49,8 @@
     }
 
     h2 {
-      font-family: 'Old Standard TT', serif;
-      font-style: italic;
-      font-size: 12px;
+      font-family: 'Roboto', sans-serif;
+      font-size: 18px;
       color: white;
       display: inline-block;
       margin-top: 0.25em;
@@ -62,7 +61,7 @@
     }
 
     h3 {
-      font-family: 'Raleway', sans-serif;
+      font-family: 'Lato', sans-serif;
       padding: 0px;
       font-size: 16px;
       margin-left: 5px;
@@ -70,8 +69,7 @@
     }
 
     h4 {
-      font-family: 'Old Standard TT', serif;
-      font-style: italic;
+      font-family: 'Roboto', sans-serif;
       padding: 0px;
       font-size: 13px;
       line-height: 16px;
@@ -83,7 +81,7 @@
       position: fixed;
       bottom: 0px;
       width: 100%;
-      top: 52px;
+      top: 70px;
     }
 
     /* Set time slider styles */
@@ -102,7 +100,7 @@
     #temporal {
       height: 25px;
       bottom: 10px;
-      width: 90px;
+      width: 94px;
       background-color: #FFFFFF;
       border-radius: 3px;
       box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.3);
@@ -110,11 +108,10 @@
 
     /* Set the styles for the text span in the temporal legend */
     #temporal span {
-      font-family: 'Old Standard TT', serif;
+      font-family: 'Lato', sans-serif;
       font-weight: normal;
-      font-style: italic;
       position: absolute;
-      font-size: 13px;
+      font-size: 15px;
       bottom: 1px;
       left: 6px;
     }
@@ -130,11 +127,10 @@
     }
 
     .leaflet-control-layers-list {
-      font-family: 'Old Standard TT', serif;
+      font-family: 'Roboto', sans-serif;
       font-weight: normal;
-      font-style: italic;
       position: absolute;
-      font-size: 13px;
+      font-size: 14px;
     }
   </style> <!-- Escape the css code -->
 
@@ -142,7 +138,7 @@
 
 <body>
   <header>
-    <h1>Chicago Horse Railways</h1><br>
+    <h1>Chicago Epizoozy, 1872</h1><br>
     <h2>Jennifer Marks, The University of Iowa</h2>
   </header>
 
@@ -194,7 +190,7 @@
       attribution: "",
       minZoom: 10,
       maxZoom: 15
-    });
+    }).addTo(map);
     var lyr1873 = L.tileLayer('./chicago_map_tiles/chicago_1873/{z}/{x}/{y}.png', {
       tms: true,
       opacity: 1.0,
@@ -1676,23 +1672,23 @@
       // define the overlays
       var overlays = {
         "Horse Stables": pointData,
-        "State": stateLine,
-        "Randolph -- Madison": randolphLine,
-        "Archer": archerLine,
+        "22nd & Cottage Grove": cottageGroveLine,
         "41st -- Stock Yards": stockYardsLine,
-        "Clark": clarkLine,
-        "Halsted & Milwaukee": milwaukeeLine,
+        "Archer": archerLine,
         "Chicago": chicagoLine,
-        "Halsted & Blue Island": blueIslandLine,
-        "Divison -- Larrabee": divisionLine,
-        "Sedgwick": sedgwickLine,
-        "22nd and Cottage Grove": cottageGroveLine,
-        "Fifth": fifthLine,
-        "Eighteenth & Indiana": indianaLine,
+        "Clark": clarkLine,
         "Clinton -- Van Buren": clintonLine,
+        "Divison -- Larrabee": divisionLine,
+        "Eighteenth & Indiana": indianaLine,
+        "Fifth": fifthLine,
+        "Halsted & Blue Island": blueIslandLine,
+        "Halsted & Milwaukee": milwaukeeLine,
         "Jefferson & Meagher": jeffersonLine,
+        "Market": marketLine,
+        "Randolph -- Madison": randolphLine,
+        "Sedgwick": sedgwickLine,
         "South Western": southwesternLine,
-        "Market": marketLine
+        "State": stateLine,
       };
 
       // define the basemaps
