@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <!-- The title of the web page -->
-  <title>Chicago Horse Railways 1872</title>
+  <title>Chicago Horse Railways and the Equine Influenza Outbreak of 1872</title>
 
   <!-- Link to Montserrat font -->
   <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
@@ -12,6 +12,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT&display=swap" rel="stylesheet">
   <!-- Link the css files -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css">
+  <!-- Link to css for the info button -->
+  <link rel="stylesheet" href="css/easy-button.css">
+  <link rel='stylesheet' href='https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css'>
 
   <!-- The rest of the css -->
   <style>
@@ -78,6 +81,14 @@
       font-weight: lighter;
     }
 
+    h5 {
+      font-family: 'Old Standard TT', serif;
+      font-style: italic;
+      padding-bottom: 0px;
+      font-size: 13px;
+      font-weight: lighter;
+    }
+
     /* Set map parameters */
     #map {
       position: fixed;
@@ -120,9 +131,18 @@
     }
 
     /* Add legend styles */
+    .legend {
+      padding: 0px 10px 6px 10px;
+      background: white;
+      background: rgba(255, 255, 255, 1.0);
+      box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.3);
+      border-radius: 3px;
+      position: absolute;
+      bottom: 10px;
+      right: 5px;
+    }
     .temporal-legend {
       padding: 0px 10px 6px 10px;
-      font: 14px/16px Arial, Helvetica, sans-serif;
       background: white;
       background: rgba(255, 255, 255, 1.0);
       box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.3);
@@ -136,13 +156,23 @@
       position: absolute;
       font-size: 13px;
     }
+
+    .leaflet-control-scale {
+		 	right: 200px;
+		}
+
+    /* Sort of works to restyle info window title -->
+    div {
+      font-family: 'Old Standard TT', serif;
+    }
+    */
   </style> <!-- Escape the css code -->
 
 </head>
 
 <body>
   <header>
-    <h1>Chicago Horse Railways</h1><br>
+    <h1>Chicago Horse Railways and the Equine Influenza Outbreak of 1872</h1><br>
     <h2>Jennifer Marks, The University of Iowa</h2>
   </header>
 
@@ -157,8 +187,17 @@
 
   <!-- temporal legends -->
   <div id='temporal'>
-    <h5 class='txt-bold'><span></span></h5>
+    <p class='txt-bold'><span></span></p>
   </div>
+
+  <!-- button-dependent info window -->
+  <div id="dialog" class="info" title="About this map">
+    <h4>Please fill this area with explanatory text about the map, data, and data
+      sources. You can also provide some background about your project and research
+      activities.
+    </h4>
+  </div>
+  <!-- end button-dependent info window -->
 
   <!-- Link to the js files -->
   <script src="https://code.jquery.com/jquery-3.2.0.min.js"></script>
@@ -168,6 +207,10 @@
   <script src="js/MovingMarker.js"></script>
   <!-- for icon markers -->
   <script src="js/leaflet.extra-markers.min.js"></script>
+
+  <!-- for info button support -->
+  <script src='js/easy-button.js'></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
   <!-- The rest of the JavaScript -->
   <script>
@@ -1706,12 +1749,27 @@
       // make a layer control and add it to the map
       L.control.layers(basemaps, overlays).addTo(map);
 
+      // create an info button to describe the map and supporting data
+      var infoButton = L.easyButton({
+        id: 'infoButton',
+        position: 'topright',
+        states: [{
+          stateName: 'show-info',
+          icon: '<strong>?</strong>',
+          title: 'Tell me about this map',
+          onClick: function(btn, map) {
+            $("#dialog").dialog();
+          }
+        }]
+      }).addTo(map);
+
       // declare a variable for the slider date
       var currentDate = $('.slider').val();
 
       sequenceUI(pointData); // Produces the time slider and sends the layer to it
       createTemporalLegend(currentDate); // Produces temporal legend upon map loading
       updateStables(pointData, currentDate); // Update the stables layer according to the date
+      drawLegend();
 
     }; //end drawMap function
 
@@ -1841,6 +1899,41 @@
       });
 
     }; // End updateStables
+
+    function drawLegend() { // Define drawLegend
+      // Define legend as a control at the bottom right
+      var legend = L.control({
+        position: 'bottomright'
+      });
+
+      // Add content to the legend
+      legend.onAdd = function(map) {
+
+        var legendContainer = L.DomUtil.create("div", "legend");
+
+        L.DomEvent.addListener(legendContainer, 'mousedown', function(e) {
+          L.DomEvent.stopPropagation(e);
+        });
+
+        $(legendContainer).append("<h4 id='legendTitle' style='font-size:15px; font-style: normal; text-transform: uppercase; font-weight: bold'>Map Legend</h4>");
+
+        var symbolsContainer = L.DomUtil.create('div', 'symbolsContainer'),
+          grades = ["Stable", "Infected Stable"],
+          labels = ["img/icon_stable_simple_black.png", "img/icon_stable_redwhite.png"];
+
+        symbolsContainer.innerHTML +=
+          "<h5><img src='img/icon_stable_simple_black.png' height='20' width='20' style='vertical-align: middle; padding: 5px'>" + '  Stable' + '<br>' +
+          "<img src='img/icon_stable_redwhite.png' height='20' width='20' style='vertical-align: middle; padding: 5px'>" + '  Infected Stable' + '<br>' +
+          '<img src="img/icon_streetcar_dg.png" width="30" height="30" style="vertical-align:bottom;">' + '    Streetcar Line' + '</h5>';
+
+        $(legendContainer).append(symbolsContainer);
+
+        return legendContainer;
+      };
+      // Add the legend to the map
+      legend.addTo(map);
+
+    }; // End drawLegend
   </script>
 </body>
 
