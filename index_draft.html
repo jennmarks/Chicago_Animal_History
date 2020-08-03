@@ -194,7 +194,11 @@
   <div id="dialog" class="info" title="About this map">
     <h4>Please fill this area with explanatory text about the map, data, and data
       sources. You can also provide some background about your project and research
-      activities.
+      activities.<br><br>
+      Map Sources:<br>
+      1. U.S. Lake Survey. "Chicago, Illinois 1872." Chicago, Illinois 1872 - American Geographical Society Library Digital Map Collection - UWM Libraries Digital Collections, American Geographical Society Library Digital Map Collection, 2008, https://collections.lib.uwm.edu/digital/collection/agdm/id/1332/.<br>
+      2. Gray, O.W. "Grays Atlas Map of Chicago. 1873." Chicago - David Rumsey Historic Map Collection, Cartography Associates, 2020, https://www.davidrumsey.com/luna/servlet/detail/RUMSEY~8~1~264506~5524868.<br>
+      3. Robinson, Elisha. "Robinson's Atlas of the City of Chicago." Robinson's Map of Chicago (Entire), 1886, Chicago Historical Society/Northwestern University, 2005, https://www.encyclopedia.chicagohistory.org/pages/11479.html.
     </h4>
   </div>
   <!-- end button-dependent info window -->
@@ -1758,7 +1762,13 @@
           icon: '<strong>?</strong>',
           title: 'Tell me about this map',
           onClick: function(btn, map) {
-            $("#dialog").dialog();
+            $("#dialog").dialog({
+              //position: {
+                //my: 'middle',
+                //at: 'top+450'
+              //},
+              width: '400px',
+            });
           }
         }]
       }).addTo(map);
