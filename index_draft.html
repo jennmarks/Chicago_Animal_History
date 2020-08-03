@@ -8,12 +8,10 @@
 
   <!-- Link to Montserrat font -->
   <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT&display=swap" rel="stylesheet">
   <!-- Link the css files -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css">
-  <!-- for icon markers -->
-  <!--<link rel="stylesheet" href="css/leaflet.extra-markers.min.css">-->
-  <!-- for grouped layer control-->
-  <link rel="stylesheet" href="css/leaflet.groupedlayercontrol.css">
 
   <!-- The rest of the css -->
   <style>
@@ -38,19 +36,21 @@
 
     /* Set font styles */
     h1 {
-      font-family: 'Montserrat', sans-serif;
+      font-family: 'Raleway', sans-serif;
       color: white;
-      font-size: 16px;
+      font-size: 18px;
       display: inline-block;
       margin-top: 0.5em;
       margin-bottom: 0.0em;
       margin-left: 0.5em;
       margin-right: 0;
-      font-weight: normal;
+      font-weight: bold;
+      text-transform: uppercase;
     }
 
     h2 {
-      font-family: 'Montserrat', sans-serif;
+      font-family: 'Old Standard TT', serif;
+      font-style: italic;
       font-size: 12px;
       color: white;
       display: inline-block;
@@ -62,7 +62,7 @@
     }
 
     h3 {
-      font-family: 'Montserrat', sans-serif;
+      font-family: 'Raleway', sans-serif;
       padding: 0px;
       font-size: 16px;
       margin-left: 5px;
@@ -70,10 +70,12 @@
     }
 
     h4 {
-      font-family: 'Montserrat', sans-serif;
-      padding: 5px;
+      font-family: 'Old Standard TT', serif;
+      font-style: italic;
+      padding: 0px;
       font-size: 13px;
       line-height: 16px;
+      font-weight: lighter;
     }
 
     /* Set map parameters */
@@ -82,6 +84,57 @@
       bottom: 0px;
       width: 100%;
       top: 52px;
+    }
+
+    /* Set time slider styles */
+    #slider {
+      position: absolute;
+      height: 25px;
+      bottom: 10px;
+      left: 125px;
+      z-index: 1000;
+      background-color: #FFFFFF;
+      border-radius: 3px;
+      box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Set temporal legend styles */
+    #temporal {
+      height: 25px;
+      bottom: 10px;
+      width: 90px;
+      background-color: #FFFFFF;
+      border-radius: 3px;
+      box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Set the styles for the text span in the temporal legend */
+    #temporal span {
+      font-family: 'Old Standard TT', serif;
+      font-weight: normal;
+      font-style: italic;
+      position: absolute;
+      font-size: 13px;
+      bottom: 1px;
+      left: 6px;
+    }
+
+    /* Add legend styles */
+    .temporal-legend {
+      padding: 0px 10px 6px 10px;
+      font: 14px/16px Arial, Helvetica, sans-serif;
+      background: white;
+      background: rgba(255, 255, 255, 1.0);
+      box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.3);
+      border-radius: 3px;
+    }
+
+    .leaflet-control-layers-list {
+      font-family: 'Old Standard TT', serif;
+      font-weight: normal;
+      font-style: italic;
+      position: absolute;
+      font-size: 13px;
     }
   </style> <!-- Escape the css code -->
 
@@ -96,6 +149,17 @@
   <!-- The map will go inside this div below -->
   <div id="map"></div>
 
+  <!-- ui sliders -->
+  <div id='slider' class='leaflet-control'>
+    <!-- Use the first and last year of the time data as the min and max. Set the initial value as the first year. Set the steps at one year. -->
+    <input type='range' min="2405087" max="2405113" value="2405087" step="1" class="slider" />
+  </div>
+
+  <!-- temporal legends -->
+  <div id='temporal'>
+    <h5 class='txt-bold'><span></span></h5>
+  </div>
+
   <!-- Link to the js files -->
   <script src="https://code.jquery.com/jquery-3.2.0.min.js"></script>
   <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
@@ -104,44 +168,57 @@
   <script src="js/MovingMarker.js"></script>
   <!-- for icon markers -->
   <script src="js/leaflet.extra-markers.min.js"></script>
-  <!-- for grouped layer control -->
-  <script src="js/leaflet.groupedlayercontrol.js"></script>
 
   <!-- The rest of the JavaScript -->
   <script>
     // Initialize the map
     var map = L.map('map', {
-      center: [41.881944, -87.627778], // You can hardcode the center of the map on specific coordinates
-      zoom: 13 // You can hardcode the initial zoom level
+      center: [41.88035512871957, -87.6652759178263], // You can hardcode the center of the map on specific coordinates
+      zoom: 13, // You can hardcode the initial zoom level
+      minZoom: 10,
+      maxZoom: 18
     });
 
-    L.mapbox.accessToken = 'pk.eyJ1IjoiamVib3dlMyIsImEiOiJjajY1M3l6bWIxeTQwMndtcXRuN3F4ejFpIn0.aE7P49pqaBKjy2HTOw-tgw'; // enter Mapbox access token
+    // Base layers
+    // .. Voyager
+    var voyager = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png', {
+      minZoom: 10,
+      maxZoom: 18,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
+    }).addTo(map);
 
-    var basemap1872 = L.mapbox.styleLayer('mapbox://styles/jebowe3/ckb6qq7er2ty71lr53by16daz').addTo(map); // Add the baselayer to the map
+    // .. TMS
+    var lyr1872 = L.tileLayer('./chicago_map_tiles/chicago_1872/{z}/{x}/{y}.png', {
+      tms: true,
+      opacity: 1.0,
+      attribution: "",
+      minZoom: 10,
+      maxZoom: 15
+    });
+    var lyr1873 = L.tileLayer('./chicago_map_tiles/chicago_1873/{z}/{x}/{y}.png', {
+      tms: true,
+      opacity: 1.0,
+      attribution: "",
+      minZoom: 11,
+      maxZoom: 15
+    });
+    var lyr1886 = L.tileLayer('./chicago_map_tiles/chicago_1886/{z}/{x}/{y}.png', {
+      tms: true,
+      opacity: 1.0,
+      attribution: "",
+      minZoom: 11,
+      maxZoom: 18
+    });
+    //  .. void background
+    var voidMap = L.tileLayer("", {
+      minZoom: 10,
+      maxZoom: 18
+    });
 
-    var basemap1886 = L.mapbox.styleLayer('mapbox://styles/jebowe3/ckcf2f1q51huk1ilbbx16uu5p');
-
-    var contemporaryBasemap = L.mapbox.styleLayer('mapbox://styles/jebowe3/ckb6qb4uv4uxx1itcz63hgg41');
-    /*
-        // Add openstreet baselayer to the map (other options can be found here: https://leaflet-extras.github.io/leaflet-providers/preview/)
-        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 18, // Set the maximum zoom level
-          minZoom: 5, // Set the minimum zoom level
-          attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(map); // Add the baselayer to the map
-    */
     // Add a scale bar
     L.control.scale({
       position: 'bottomright' // Position the scale bar at the bottom-right corner
     }).addTo(map);
-
-    /*
-    // Add functions to style the polygons by values
-    function getColor(d) {
-      return d === null ? 'red' :
-            'blue';
-    };
-    */
 
     // Load your data asynchronously
     d3.queue()
@@ -162,7 +239,7 @@
       .defer(d3.json, 'data/Jefferson_Meagher.geojson') // Add more files if needed
       .defer(d3.json, 'data/South_Western.geojson') // Add more files if needed
       .defer(d3.json, 'data/Market.geojson') // Add more files if needed
-      .defer(d3.json, 'data/geocoded_stables_4.geojson')
+      .defer(d3.json, 'data/epizootic_calendar_1.geojson')
       .await(drawMap); // Load the layers after the map loads
 
     // Provide instructions for drawing the map
@@ -218,10 +295,7 @@
           var props = layer.feature.properties; // Get the properties of the layer features
 
           // Bind a popup window to the layer
-          layer.bindPopup("<h3>" + props + "</h3>" +
-            "<h4>Information:" +
-            "<br>" + props + "</h4>"
-          );
+          layer.bindPopup("<h4>" + props.line + "</h4>");
 
           layer.on({
 
@@ -277,10 +351,7 @@
           var props = layer.feature.properties; // Get the properties of the layer features
 
           // Bind a popup window to the layer
-          layer.bindPopup("<h3>" + props + "</h3>" +
-            "<h4>Information:" +
-            "<br>" + props + "</h4>"
-          );
+          layer.bindPopup("<h4>" + props.line + "</h4>");
 
           layer.on({
 
@@ -336,10 +407,7 @@
           var props = layer.feature.properties; // Get the properties of the layer features
 
           // Bind a popup window to the layer
-          layer.bindPopup("<h3>" + props + "</h3>" +
-            "<h4>Information:" +
-            "<br>" + props + "</h4>"
-          );
+          layer.bindPopup("<h4>" + props.line + "</h4>");
 
           layer.on({
 
@@ -395,10 +463,7 @@
           var props = layer.feature.properties; // Get the properties of the layer features
 
           // Bind a popup window to the layer
-          layer.bindPopup("<h3>" + props + "</h3>" +
-            "<h4>Information:" +
-            "<br>" + props + "</h4>"
-          );
+          layer.bindPopup("<h4>" + props.line + "</h4>");
 
           layer.on({
 
@@ -455,10 +520,7 @@
           var props = layer.feature.properties; // Get the properties of the layer features
 
           // Bind a popup window to the layer
-          layer.bindPopup("<h3>" + props + "</h3>" +
-            "<h4>Information:" +
-            "<br>" + props + "</h4>"
-          );
+          layer.bindPopup("<h4>" + props.line + "</h4>");
 
           layer.on({
 
@@ -515,10 +577,7 @@
           var props = layer.feature.properties; // Get the properties of the layer features
 
           // Bind a popup window to the layer
-          layer.bindPopup("<h3>" + props + "</h3>" +
-            "<h4>Information:" +
-            "<br>" + props + "</h4>"
-          );
+          layer.bindPopup("<h4>" + props.line + "</h4>");
 
           layer.on({
 
@@ -575,10 +634,7 @@
           var props = layer.feature.properties; // Get the properties of the layer features
 
           // Bind a popup window to the layer
-          layer.bindPopup("<h3>" + props + "</h3>" +
-            "<h4>Information:" +
-            "<br>" + props + "</h4>"
-          );
+          layer.bindPopup("<h4>" + props.line + "</h4>");
 
           layer.on({
 
@@ -635,10 +691,7 @@
           var props = layer.feature.properties; // Get the properties of the layer features
 
           // Bind a popup window to the layer
-          layer.bindPopup("<h3>" + props + "</h3>" +
-            "<h4>Information:" +
-            "<br>" + props + "</h4>"
-          );
+          layer.bindPopup("<h4>" + props.line + "</h4>");
 
           layer.on({
 
@@ -695,10 +748,7 @@
           var props = layer.feature.properties; // Get the properties of the layer features
 
           // Bind a popup window to the layer
-          layer.bindPopup("<h3>" + props + "</h3>" +
-            "<h4>Information:" +
-            "<br>" + props + "</h4>"
-          );
+          layer.bindPopup("<h4>" + props.line + "</h4>");
 
           layer.on({
 
@@ -755,10 +805,7 @@
           var props = layer.feature.properties; // Get the properties of the layer features
 
           // Bind a popup window to the layer
-          layer.bindPopup("<h3>" + props + "</h3>" +
-            "<h4>Information:" +
-            "<br>" + props + "</h4>"
-          );
+          layer.bindPopup("<h4>" + props.line + "</h4>");
 
           layer.on({
 
@@ -815,10 +862,7 @@
           var props = layer.feature.properties; // Get the properties of the layer features
 
           // Bind a popup window to the layer
-          layer.bindPopup("<h3>" + props + "</h3>" +
-            "<h4>Information:" +
-            "<br>" + props + "</h4>"
-          );
+          layer.bindPopup("<h4>" + props.line + "</h4>");
 
           layer.on({
 
@@ -875,10 +919,7 @@
           var props = layer.feature.properties; // Get the properties of the layer features
 
           // Bind a popup window to the layer
-          layer.bindPopup("<h3>" + props + "</h3>" +
-            "<h4>Information:" +
-            "<br>" + props + "</h4>"
-          );
+          layer.bindPopup("<h4>" + props.line + "</h4>");
 
           layer.on({
 
@@ -935,10 +976,7 @@
           var props = layer.feature.properties; // Get the properties of the layer features
 
           // Bind a popup window to the layer
-          layer.bindPopup("<h3>" + props + "</h3>" +
-            "<h4>Information:" +
-            "<br>" + props + "</h4>"
-          );
+          layer.bindPopup("<h4>" + props.line + "</h4>");
 
           layer.on({
 
@@ -995,10 +1033,7 @@
           var props = layer.feature.properties; // Get the properties of the layer features
 
           // Bind a popup window to the layer
-          layer.bindPopup("<h3>" + props + "</h3>" +
-            "<h4>Information:" +
-            "<br>" + props + "</h4>"
-          );
+          layer.bindPopup("<h4>" + props.line + "</h4>");
 
           layer.on({
 
@@ -1055,10 +1090,7 @@
           var props = layer.feature.properties; // Get the properties of the layer features
 
           // Bind a popup window to the layer
-          layer.bindPopup("<h3>" + props + "</h3>" +
-            "<h4>Information:" +
-            "<br>" + props + "</h4>"
-          );
+          layer.bindPopup("<h4>" + props.line + "</h4>");
 
           layer.on({
 
@@ -1115,10 +1147,7 @@
           var props = layer.feature.properties; // Get the properties of the layer features
 
           // Bind a popup window to the layer
-          layer.bindPopup("<h3>" + props + "</h3>" +
-            "<h4>Information:" +
-            "<br>" + props + "</h4>"
-          );
+          layer.bindPopup("<h4>" + props.line + "</h4>");
 
           layer.on({
 
@@ -1175,10 +1204,7 @@
           var props = layer.feature.properties; // Get the properties of the layer features
 
           // Bind a popup window to the layer
-          layer.bindPopup("<h3>" + props + "</h3>" +
-            "<h4>Information:" +
-            "<br>" + props + "</h4>"
-          );
+          layer.bindPopup("<h4>" + props.line + "</h4>");
 
           layer.on({
 
@@ -1204,9 +1230,6 @@
         },
 
       }); // End seventeenth layer
-
-      // Fit the map to the extent of the first data layer upon drawing
-      //map.fitBounds(dataOne.getBounds());
 
       // Get the number of line segments in each line geojson
       var multiplier1 = reversedLatLngsProcessed1[0].length - 1;
@@ -1256,571 +1279,568 @@
 
       var marker1 = L.Marker.movingMarker(reversedLatLngsProcessed1[0], speeds1);
       marker1.setIcon(customIcon);
+      marker1.on('mouseover', function() {
+        marker1.bindPopup('<h4>State Street</h4>').openPopup();
+      });
+      marker1.on('mouseout', function() {
+        marker1.closePopup();
+      });
       marker1.once('click', function() {
         marker1.start();
-        marker1.closePopup();
-        marker1.unbindPopup();
         marker1.on('click', function() {
           if (marker1.isRunning()) {
             marker1.pause();
           } else {
             marker1.start();
-          }
+          };
         });
         setTimeout(function() {
-          marker1.bindPopup('<b>State Street</b>').openPopup();
+          marker1.bindPopup('<h4>State Street</h4>').openPopup();
         }, 100000);
       });
 
-      marker1.bindPopup('<b>State Street</b>', {
-        closeOnClick: false
-      });
-      marker1.openPopup();
-
       var marker2 = L.Marker.movingMarker(reversedLatLngsProcessed2[0], speeds2);
       marker2.setIcon(customIcon);
+      marker2.on('mouseover', function() {
+        marker2.bindPopup('<h4>Randolph, Bryan, Lake, and Madison Streets</h4>').openPopup();
+      });
+      marker2.on('mouseout', function() {
+        marker2.closePopup();
+      });
       marker2.once('click', function() {
         marker2.start();
-        marker2.closePopup();
-        marker2.unbindPopup();
         marker2.on('click', function() {
           if (marker2.isRunning()) {
             marker2.pause();
           } else {
             marker2.start();
-          }
+          };
         });
         setTimeout(function() {
-          marker2.bindPopup('<b>Randolph, Bryan, Lake, and Madison Streets</b>').openPopup();
+          marker2.bindPopup('<h4>Randolph, Bryan, Lake, and Madison Streets</h4>').openPopup();
         }, 10000);
       });
 
-      marker2.bindPopup('<b>Randolph, Bryan, Lake, and Madison Streets</b>', {
-        closeOnClick: false
-      });
-      marker2.openPopup();
-
       var marker3 = L.Marker.movingMarker(reversedLatLngsProcessed3[0], speeds3);
       marker3.setIcon(customIcon);
+      marker3.on('mouseover', function() {
+        marker3.bindPopup('<h4>Archer Avenue</h4>').openPopup();
+      });
+      marker3.on('mouseout', function() {
+        marker3.closePopup();
+      });
       marker3.once('click', function() {
         marker3.start();
-        marker3.closePopup();
-        marker3.unbindPopup();
         marker3.on('click', function() {
           if (marker3.isRunning()) {
             marker3.pause();
           } else {
             marker3.start();
-          }
+          };
         });
         setTimeout(function() {
-          marker3.bindPopup('<b>Archer Avenue</b>').openPopup();
+          marker3.bindPopup('<h4>Archer Avenue</h4>').openPopup();
         }, 10000);
       });
 
-      marker3.bindPopup('<b>Archer Avenue</b>', {
-        closeOnClick: false
-      });
-      marker3.openPopup();
-
       var marker4 = L.Marker.movingMarker(reversedLatLngsProcessed4[0], speeds4);
       marker4.setIcon(customIcon);
+      marker4.on('mouseover', function() {
+        marker4.bindPopup('<h4>41st Street and Union Stock Yards</h4>').openPopup();
+      });
+      marker4.on('mouseout', function() {
+        marker4.closePopup();
+      });
       marker4.once('click', function() {
         marker4.start();
-        marker4.closePopup();
-        marker4.unbindPopup();
         marker4.on('click', function() {
           if (marker4.isRunning()) {
             marker4.pause();
           } else {
             marker4.start();
-          }
+          };
         });
         setTimeout(function() {
-          marker4.bindPopup('<b>41st Street and Union Stock Yards</b>').openPopup();
+          marker4.bindPopup('<h4>41st Street and Union Stock Yards</h4>').openPopup();
         }, 10000);
       });
 
-      marker4.bindPopup('<b>41st Street and Union Stock Yards</b>', {
-        closeOnClick: false
-      });
-      marker4.openPopup();
-
       var marker5 = L.Marker.movingMarker(reversedLatLngsProcessed5[0], speeds5);
       marker5.setIcon(customIcon);
+      marker5.on('mouseover', function() {
+        marker5.bindPopup('<h4>Clark Street</h4>').openPopup();
+      });
+      marker5.on('mouseout', function() {
+        marker5.closePopup();
+      });
       marker5.once('click', function() {
         marker5.start();
-        marker5.closePopup();
-        marker5.unbindPopup();
         marker5.on('click', function() {
           if (marker5.isRunning()) {
             marker5.pause();
           } else {
             marker5.start();
-          }
+          };
         });
         setTimeout(function() {
-          marker5.bindPopup('<b>Clark Street</b>').openPopup();
+          marker5.bindPopup('<h4>Clark Street</h4>').openPopup();
         }, 10000);
       });
 
-      marker5.bindPopup('<b>Clark Street</b>', {
-        closeOnClick: false
-      });
-      marker5.openPopup();
-
       var marker6 = L.Marker.movingMarker(reversedLatLngsProcessed6[0], speeds6);
       marker6.setIcon(customIcon);
+      marker6.on('mouseover', function() {
+        marker6.bindPopup('<h4>Halsted and Milwaukee Streets</h4>').openPopup();
+      });
+      marker6.on('mouseout', function() {
+        marker6.closePopup();
+      });
       marker6.once('click', function() {
         marker6.start();
-        marker6.closePopup();
-        marker6.unbindPopup();
         marker6.on('click', function() {
           if (marker6.isRunning()) {
             marker6.pause();
           } else {
             marker6.start();
-          }
+          };
         });
         setTimeout(function() {
-          marker6.bindPopup('<b>Halsted and Milwaukee Streets</b>').openPopup();
+          marker6.bindPopup('<h4>Halsted and Milwaukee Streets</h4>').openPopup();
         }, 10000);
       });
 
-      marker6.bindPopup('<b>Halsted and Milwaukee Streets</b>', {
-        closeOnClick: false
-      });
-      marker6.openPopup();
-
       var marker7 = L.Marker.movingMarker(reversedLatLngsProcessed7[0], speeds7);
       marker7.setIcon(customIcon);
+      marker7.on('mouseover', function() {
+        marker7.bindPopup('<h4>Chicago Avenue</h4>').openPopup();
+      });
+      marker7.on('mouseout', function() {
+        marker7.closePopup();
+      });
       marker7.once('click', function() {
         marker7.start();
-        marker7.closePopup();
-        marker7.unbindPopup();
         marker7.on('click', function() {
           if (marker7.isRunning()) {
             marker7.pause();
           } else {
             marker7.start();
-          }
+          };
         });
         setTimeout(function() {
-          marker7.bindPopup('<b>Chicago Avenue</b>').openPopup();
+          marker7.bindPopup('<h4>Chicago Avenue</h4>').openPopup();
         }, 10000);
       });
 
-      marker7.bindPopup('<b>Chicago Avenue</b>', {
-        closeOnClick: false
-      });
-      marker7.openPopup();
-
       var marker8 = L.Marker.movingMarker(reversedLatLngsProcessed8[0], speeds8);
       marker8.setIcon(customIcon);
+      marker8.on('mouseover', function() {
+        marker8.bindPopup('<h4>Halsted St. and Blue Island Ave.</h4>').openPopup();
+      });
+      marker8.on('mouseout', function() {
+        marker8.closePopup();
+      });
       marker8.once('click', function() {
         marker8.start();
-        marker8.closePopup();
-        marker8.unbindPopup();
         marker8.on('click', function() {
           if (marker8.isRunning()) {
             marker8.pause();
           } else {
             marker8.start();
-          }
+          };
         });
         setTimeout(function() {
-          marker8.bindPopup('<b>Halsted St. and Blue Island Ave.</b>').openPopup();
+          marker8.bindPopup('<h4>Halsted St. and Blue Island Ave.</h4>').openPopup();
         }, 10000);
       });
 
-      marker8.bindPopup('<b>Halsted St. and Blue Island Ave.</b>', {
-        closeOnClick: false
-      });
-      marker8.openPopup();
-
       var marker9 = L.Marker.movingMarker(reversedLatLngsProcessed9[0], speeds9);
       marker9.setIcon(customIcon);
+      marker9.on('mouseover', function() {
+        marker9.bindPopup('<h4>Division, Clybourn, and Larrabee Streets</h4>').openPopup();
+      });
+      marker9.on('mouseout', function() {
+        marker9.closePopup();
+      });
       marker9.once('click', function() {
         marker9.start();
-        marker9.closePopup();
-        marker9.unbindPopup();
         marker9.on('click', function() {
           if (marker9.isRunning()) {
             marker9.pause();
           } else {
             marker9.start();
-          }
+          };
         });
         setTimeout(function() {
-          marker9.bindPopup('<b>Division, Clybourn, and Larrabee Streets</b>').openPopup();
+          marker9.bindPopup('<h4>Division, Clybourn, and Larrabee Streets</h4>').openPopup();
         }, 10000);
       });
 
-      marker9.bindPopup('<b>Division, Clybourn, and Larrabee Streets</b>', {
-        closeOnClick: false
-      });
-      marker9.openPopup();
-
       var marker10 = L.Marker.movingMarker(reversedLatLngsProcessed10[0], speeds10);
       marker10.setIcon(customIcon);
+      marker10.on('mouseover', function() {
+        marker10.bindPopup('<h4>Sedgwick Street</h4>').openPopup();
+      });
+      marker10.on('mouseout', function() {
+        marker10.closePopup();
+      });
       marker10.once('click', function() {
         marker10.start();
-        marker10.closePopup();
-        marker10.unbindPopup();
         marker10.on('click', function() {
           if (marker10.isRunning()) {
             marker10.pause();
           } else {
             marker10.start();
-          }
+          };
         });
         setTimeout(function() {
-          marker10.bindPopup('<b>Sedgwick Street</b>').openPopup();
+          marker10.bindPopup('<h4>Sedgwick Street</h4>').openPopup();
         }, 10000);
       });
 
-      marker10.bindPopup('<b>Sedgwick Street</b>', {
-        closeOnClick: false
-      });
-      marker10.openPopup();
-
       var marker11 = L.Marker.movingMarker(reversedLatLngsProcessed11[0], speeds11);
       marker11.setIcon(customIcon);
+      marker11.on('mouseover', function() {
+        marker11.bindPopup('<h4>22nd St. and Cottage Grove Ave.</h4>').openPopup();
+      });
+      marker11.on('mouseout', function() {
+        marker11.closePopup();
+      });
       marker11.once('click', function() {
         marker11.start();
-        marker11.closePopup();
-        marker11.unbindPopup();
         marker11.on('click', function() {
           if (marker11.isRunning()) {
             marker11.pause();
           } else {
             marker11.start();
-          }
+          };
         });
         setTimeout(function() {
-          marker11.bindPopup('<b>22nd St. and Cottage Grove Ave.</b>').openPopup();
+          marker11.bindPopup('<h4>22nd St. and Cottage Grove Ave.</h4>').openPopup();
         }, 10000);
       });
 
-      marker11.bindPopup('<b>22nd St. and Cottage Grove Ave.</b>', {
-        closeOnClick: false
-      });
-      marker11.openPopup();
-
       var marker12 = L.Marker.movingMarker(reversedLatLngsProcessed12[0], speeds12);
       marker12.setIcon(customIcon);
+      marker12.on('mouseover', function() {
+        marker12.bindPopup('<h4>Fifth Avenue</h4>').openPopup();
+      });
+      marker12.on('mouseout', function() {
+        marker12.closePopup();
+      });
       marker12.once('click', function() {
         marker12.start();
-        marker12.closePopup();
-        marker12.unbindPopup();
         marker12.on('click', function() {
           if (marker12.isRunning()) {
             marker12.pause();
           } else {
             marker12.start();
-          }
+          };
         });
         setTimeout(function() {
-          marker12.bindPopup('<b>Fifth Avenue</b>').openPopup();
+          marker12.bindPopup('<h4>Fifth Avenue</h4>').openPopup();
         }, 10000);
       });
 
-      marker12.bindPopup('<b>Fifth Avenue</b>', {
-        closeOnClick: false
-      });
-      marker12.openPopup();
-
       var marker13 = L.Marker.movingMarker(reversedLatLngsProcessed13[0], speeds13);
       marker13.setIcon(customIcon);
+      marker13.on('mouseover', function() {
+        marker13.bindPopup('<h4>Eighteenth St. and Indiana Ave.</h4>').openPopup();
+      });
+      marker13.on('mouseout', function() {
+        marker13.closePopup();
+      });
       marker13.once('click', function() {
         marker13.start();
-        marker13.closePopup();
-        marker13.unbindPopup();
         marker13.on('click', function() {
           if (marker13.isRunning()) {
             marker13.pause();
           } else {
             marker13.start();
-          }
+          };
         });
         setTimeout(function() {
-          marker13.bindPopup('<b>Eighteenth St. and Indiana Ave.</b>').openPopup();
+          marker13.bindPopup('<h4>Eighteenth St. and Indiana Ave.</h4>').openPopup();
         }, 10000);
       });
 
-      marker13.bindPopup('<b>Eighteenth St. and Indiana Ave.</b>', {
-        closeOnClick: false
-      });
-      marker13.openPopup();
-
       var marker14 = L.Marker.movingMarker(reversedLatLngsProcessed14[0], speeds14);
       marker14.setIcon(customIcon);
+      marker14.on('mouseover', function() {
+        marker14.bindPopup('<h4>Clinton, 12th, Jefferson, & Van Buren Streets</h4>').openPopup();
+      });
+      marker14.on('mouseout', function() {
+        marker14.closePopup();
+      });
       marker14.once('click', function() {
         marker14.start();
-        marker14.closePopup();
-        marker14.unbindPopup();
         marker14.on('click', function() {
           if (marker14.isRunning()) {
             marker14.pause();
           } else {
             marker14.start();
-          }
+          };
         });
         setTimeout(function() {
-          marker14.bindPopup('<b>Clinton, 12th, Jefferson, & Van Buren Streets</b>').openPopup();
+          marker14.bindPopup('<h4>Clinton, 12th, Jefferson, & Van Buren Streets</h4>').openPopup();
         }, 10000);
       });
 
-      marker14.bindPopup('<b>Clinton, 12th, Jefferson, & Van Buren Streets</b>', {
-        closeOnClick: false
-      });
-      marker14.openPopup();
-
       var marker15 = L.Marker.movingMarker(reversedLatLngsProcessed15[0], speeds15);
       marker15.setIcon(customIcon);
+      marker15.on('mouseover', function() {
+        marker15.bindPopup('<h4>Jefferson and Meagher Streets</h4>').openPopup();
+      });
+      marker15.on('mouseout', function() {
+        marker15.closePopup();
+      });
       marker15.once('click', function() {
         marker15.start();
-        marker15.closePopup();
-        marker15.unbindPopup();
         marker15.on('click', function() {
           if (marker15.isRunning()) {
             marker15.pause();
           } else {
             marker15.start();
-          }
+          };
         });
         setTimeout(function() {
-          marker15.bindPopup('<b>Jefferson and Meagher Streets</b>').openPopup();
+          marker15.bindPopup('<h4>Jefferson and Meagher Streets</h4>').openPopup();
         }, 10000);
       });
 
-      marker15.bindPopup('<b>Jefferson and Meagher Streets</b>', {
-        closeOnClick: false
-      });
-      marker15.openPopup();
-
       var marker16 = L.Marker.movingMarker(reversedLatLngsProcessed16[0], speeds16);
       marker16.setIcon(customIcon);
+      marker16.on('mouseover', function() {
+        marker16.bindPopup('<h4>South Western Road</h4>').openPopup();
+      });
+      marker16.on('mouseout', function() {
+        marker16.closePopup();
+      });
       marker16.once('click', function() {
         marker16.start();
-        marker16.closePopup();
-        marker16.unbindPopup();
         marker16.on('click', function() {
           if (marker16.isRunning()) {
             marker16.pause();
           } else {
             marker16.start();
-          }
+          };
         });
         setTimeout(function() {
-          marker16.bindPopup('<b>South Western Road</b>').openPopup();
+          marker16.bindPopup('<h4>South Western Road</h4>').openPopup();
         }, 10000);
       });
 
-      marker16.bindPopup('<b>South Western Road</b>', {
-        closeOnClick: false
-      });
-      marker16.openPopup();
-
       var marker17 = L.Marker.movingMarker(reversedLatLngsProcessed17[0], speeds17);
       marker17.setIcon(customIcon);
+      marker17.on('mouseover', function() {
+        marker17.bindPopup('<h4>Market Street</h4>').openPopup();
+      });
+      marker17.on('mouseout', function() {
+        marker17.closePopup();
+      });
       marker17.once('click', function() {
         marker17.start();
-        marker17.closePopup();
-        marker17.unbindPopup();
         marker17.on('click', function() {
           if (marker17.isRunning()) {
             marker17.pause();
           } else {
             marker17.start();
-          }
+          };
         });
         setTimeout(function() {
-          marker17.bindPopup('<b>Market Street</b>').openPopup();
+          marker17.bindPopup('<h4>Market Street</h4>').openPopup();
         }, 10000);
       });
 
-      marker17.bindPopup('<b>Market Street</b>', {
-        closeOnClick: false
-      });
-      marker17.openPopup();
+      // define the stables data
+      var pointData = L.geoJson(stables);
 
-      // Declare a variable for your custom icon and style
-      var stableIcon = L.icon({
-        iconUrl: 'img/icon_stable_simple_black.png', // local path to the desired icon image file
-        iconSize:     [20, 20], // size of the icon
-        iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
-        popupAnchor:  [7, 0] // point from which the popup should open relative to the iconAnchor
-      });
+      // make layer groups out of each streetcar line and marker
+      var stateLine = L.layerGroup([dataOne, marker1]);
+      var randolphLine = L.layerGroup([dataTwo, marker2]);
+      var archerLine = L.layerGroup([dataThree, marker3]);
+      var stockYardsLine = L.layerGroup([dataFour, marker4]);
+      var clarkLine = L.layerGroup([dataFive, marker5]);
+      var milwaukeeLine = L.layerGroup([dataSix, marker6]);
+      var chicagoLine = L.layerGroup([dataSeven, marker7]);
+      var blueIslandLine = L.layerGroup([dataEight, marker8]);
+      var divisionLine = L.layerGroup([dataNine, marker9]);
+      var sedgwickLine = L.layerGroup([dataTen, marker10]);
+      var cottageGroveLine = L.layerGroup([dataEleven, marker11]);
+      var fifthLine = L.layerGroup([dataTwelve, marker12]);
+      var indianaLine = L.layerGroup([dataThirteen, marker13]);
+      var clintonLine = L.layerGroup([dataFourteen, marker14]);
+      var jeffersonLine = L.layerGroup([dataFifteen, marker15]);
+      var southwesternLine = L.layerGroup([dataSixteen, marker16]);
+      var marketLine = L.layerGroup([dataSeventeen, marker17]);
 
-      var pointData = L.geoJson(stables, { // Define the point data layer with a variable
-
-        pointToLayer: function(feature, ll) {
-          //style the points with the stableIcon
-          return L.marker(ll, {
-            icon: stableIcon
-          })
-        /*
-          //style the points as circle markers
-          return L.circleMarker(ll, {
-            radius: 5,
-            fillColor: "black",
-            color: "orange",
-            weight: 0.5,
-            opacity: 1.0,
-            fillOpacity: 1.0
-          })
-        */
-        }, //end pointToLayer
-
-        //restyle on mouseover, reset style on mouseout
-        onEachFeature: function(feature, layer) {
-
-          //declare a variable to point to your geojson properties
-          var props = layer.feature.properties;
-/*
-          //define what happens on mouseover
-          layer.on("mouseover", function(e) {
-            layer.setStyle({
-              radius: 5,
-              fillColor: "yellow",
-              color: "#3978BF",
-              weight: 0.5,
-              opacity: 1.0,
-              fillOpacity: 1.0,
-            });
-          });
-*/
-          //bind a popup window to each circle marker
-          layer.bindPopup("<h4 style='font-size:12px'>" + props.uniqueid +
-            "<br>" + props.streetaddress +
-            "<br>Notes: " + props.Notes + "</h4>"
-          );
-/*
-          //define what happens on mouseout
-          layer.on("mouseout", function(e) {
-
-            //style the points
-            layer.setStyle({
-              radius: 5,
-              fillColor: "black",
-              color: "orange",
-              weight: 0.5,
-              opacity: 1.0,
-              fillOpacity: 1.0,
-            });
-
-          });
-*/
-        } //end onEachFeature
-
-      }); // End pointData
-
-      var groupedOverlays = {
-        "<span class='controlHeading'>Base Maps</span>": {
-          "1872": basemap1872,
-          "1886": basemap1886,
-          "Contemporary": contemporaryBasemap,
-        },
-        "<span class='controlHeading'>State</span>": {
-          "Line": dataOne,
-          "Marker": marker1,
-        },
-        "<span class='controlHeading'>Randolph -- Madison</span>": {
-          "Line": dataTwo,
-          "Marker": marker2,
-        },
-        "<span class='controlHeading'>Archer</span>": {
-          "Line": dataThree,
-          "Marker": marker3,
-        },
-        "<span class='controlHeading'>41st -- Stock Yards</span>": {
-          "Line": dataFour,
-          "Marker": marker4,
-        },
-        "<span class='controlHeading'>Clark</span>": {
-          "Line": dataFive,
-          "Marker": marker5,
-        },
-        "<span class='controlHeading'>Halsted & Milwaukee</span>": {
-          "Line": dataSix,
-          "Marker": marker6,
-        },
-        "<span class='controlHeading'>Chicago</span>": {
-          "Line": dataSeven,
-          "Marker": marker7,
-        },
-        "<span class='controlHeading'>Halsted & Blue Island</span>": {
-          "Line": dataEight,
-          "Marker": marker8,
-        },
-        "<span class='controlHeading'>Divison -- Larrabee</span>": {
-          "Line": dataNine,
-          "Marker": marker9,
-        },
-        "<span class='controlHeading'>Sedgwick</span>": {
-          "Line": dataTen,
-          "Marker": marker10,
-        },
-        "<span class='controlHeading'>22nd and Cottage Grove</span>": {
-          "Line": dataEleven,
-          "Marker": marker11,
-        },
-        "<span class='controlHeading'>Fifth</span>": {
-          "Line": dataTwelve,
-          "Marker": marker12,
-        },
-        "<span class='controlHeading'>Eighteenth & Indiana</span>": {
-          "Line": dataThirteen,
-          "Marker": marker13,
-        },
-        "<span class='controlHeading'>Clinton -- Van Buren</span>": {
-          "Line": dataFourteen,
-          "Marker": marker14,
-        },
-        "<span class='controlHeading'>Jefferson & Meagher</span>": {
-          "Line": dataFifteen,
-          "Marker": marker15,
-        },
-        "<span class='controlHeading'>South Western</span>": {
-          "Line": dataSixteen,
-          "Marker": marker16,
-        },
-        "<span class='controlHeading'>Market</span>": {
-          "Line": dataSeventeen,
-          "Marker": marker17,
-        },
-        "<span class='controlHeading'>Stables</span>": {
-          "Stables": pointData,
-        },
+      // define the overlays
+      var overlays = {
+        "Horse Stables": pointData,
+        "State": stateLine,
+        "Randolph -- Madison": randolphLine,
+        "Archer": archerLine,
+        "41st -- Stock Yards": stockYardsLine,
+        "Clark": clarkLine,
+        "Halsted & Milwaukee": milwaukeeLine,
+        "Chicago": chicagoLine,
+        "Halsted & Blue Island": blueIslandLine,
+        "Divison -- Larrabee": divisionLine,
+        "Sedgwick": sedgwickLine,
+        "22nd and Cottage Grove": cottageGroveLine,
+        "Fifth": fifthLine,
+        "Eighteenth & Indiana": indianaLine,
+        "Clinton -- Van Buren": clintonLine,
+        "Jefferson & Meagher": jeffersonLine,
+        "South Western": southwesternLine,
+        "Market": marketLine
       };
 
-      var options = {
-        // Make the "Base Maps" group exclusive (use radio inputs)
-        exclusiveGroups: ["<span class='controlHeading'>Base Maps</span>"],
-        // Show a checkbox next to non-exclusive group labels for toggling all
-        groupCheckboxes: true,
-        collapsed: true
+      // define the basemaps
+      var basemaps = {
+        "1872 Map": lyr1872,
+        "1873 Map": lyr1873,
+        "1886 Map": lyr1886,
+        "Contemporary Map": voidMap
       };
 
-      // Use the custom grouped layer control, not "L.control.layers"
-      L.control.groupedLayers(null, groupedOverlays, options).addTo(map);
+      // make a layer control and add it to the map
+      L.control.layers(basemaps, overlays).addTo(map);
 
-      $('.leaflet-control-layers-group-label').each(function(index) {
-        var self = $(this),
-          trigger = $('<label>', {
-            class: 'trigger',
-            for: 'dropdown-trigger-' + index
-          }).insertBefore(self),
-          radio = $('<input>', {
-            type: 'radio',
-            class: 'trigger-radio',
-            name: 'dropdown-control',
-            id: 'dropdown-trigger-' + index
-          }).insertBefore(trigger);
-      });
+      // declare a variable for the slider date
+      var currentDate = $('.slider').val();
+
+      sequenceUI(pointData); // Produces the time slider and sends the layer to it
+      createTemporalLegend(currentDate); // Produces temporal legend upon map loading
+      updateStables(pointData, currentDate); // Update the stables layer according to the date
 
     }; //end drawMap function
+
+    function sequenceUI(pointData) { // Define sequenceUI
+
+      // create Leaflet control for the slider
+      var sliderControl = L.control({
+        position: 'bottomleft',
+        follow: true
+      });
+
+      // add controls to the slider
+      sliderControl.onAdd = function(map) {
+
+        var controls = L.DomUtil.get("slider"); // get the style settings
+
+        // disable the mouse events and map dragging on mousedown
+        L.DomEvent.addListener(controls, 'mousedown', function(e) {
+          L.DomEvent.stopPropagation(e);
+          map.dragging.disable();
+        });
+
+        // re-enable map dragging on mouseout
+        L.DomEvent.addListener(slider, "mouseout", function(e) {
+          map.dragging.enable();
+        });
+
+        return controls; // return the style settings
+
+      }
+
+      // add the control to the map
+      sliderControl.addTo(map);
+
+      $('.slider')
+        .on('input change', function() {
+          var currentDate = $(this).val(); // identifies the year selected
+          createTemporalLegend(currentDate);
+          updateStables(pointData, currentDate);
+        });
+    }; // End sequenceUI
+
+    function createTemporalLegend(currentDate) { // Define createTemporalLegend
+
+      var temporalLegend = L.control({
+        position: 'bottomleft' // place the temporal legend at bottom left corner
+      });
+
+      // when added to the map
+      temporalLegend.onAdd = function(map) {
+
+        var div = L.DomUtil.get("temporal"); // get the style settings
+
+        // disable the mouse events
+        L.DomEvent.addListener(div, 'mousedown', function(e) {
+          L.DomEvent.stopPropagation(e);
+        });
+
+        return div; // return the style settings
+
+      }
+
+      //convert the Julian Day Number to the Gregorian Calendar Date
+      var X = parseFloat(currentDate) + 0.5;
+      var Z = Math.floor(X); //Get day without time
+      var F = X - Z; //Get time
+      var Y = Math.floor((Z - 1867216.25) / 36524.25);
+      var A = Z + 1 + Y - Math.floor(Y / 4);
+      var B = A + 1524;
+      var C = Math.floor((B - 122.1) / 365.25);
+      var D = Math.floor(365.25 * C);
+      var G = Math.floor((B - D) / 30.6001);
+      //must get number less than or equal to 12)
+      var month_p = (G < 13.5) ? (G - 1) : (G - 13);
+      //if Month is January or February, or the rest of year
+      var year = (month_p < 2.5) ? (C - 4715) : (C - 4716);
+      month_p -= 1; //Handle JavaScript month format
+      var month = month_p + 1
+      var UT = B - D - Math.floor(30.6001 * G) + F;
+      var day = Math.floor(UT);
+      //Determine time
+      UT -= Math.floor(UT);
+      UT *= 24;
+      var hour = Math.floor(UT);
+      UT -= Math.floor(UT);
+      UT *= 60;
+      var minute = Math.floor(UT);
+      //end conversion of Julian Day Number to Gregorian Calendar date
+
+      $('#temporal span').html(month + "/" + day + "/" + year); //change grade value to that currently selected by UI slider
+
+      temporalLegend.addTo(map); // add the temporal legend to the map
+
+    }; // End createTemporalLegend
+
+    function updateStables(pointData, currentDate) { // Define updateStables
+
+      // Declare a variable for your custom icon and style
+      var blackIcon = L.icon({
+        iconUrl: 'img/icon_stable_simple_black.png', // local path to the desired icon image file
+        iconSize: [20, 20], // size of the icon
+        iconAnchor: [0, 0], // point of the icon which will correspond to marker's location
+        popupAnchor: [7, 0] // point from which the popup should open relative to the iconAnchor
+      });
+
+      // Declare a variable for your custom icon and style
+      var redIcon = L.icon({
+        iconUrl: 'img/icon_stable_redwhite.png', // local path to the desired icon image file
+        iconSize: [20, 20], // size of the icon
+        iconAnchor: [0, 0], // point of the icon which will correspond to marker's location
+        popupAnchor: [7, 0] // point from which the popup should open relative to the iconAnchor
+      });
+
+      pointData.eachLayer(function(layer) {
+        var props = layer.feature.properties; // Define a properties variable called props
+        var stableNotes = props[currentDate]; // Define a variable for notes about horse sickness at stables
+        if (stableNotes === null) {
+          layer.setIcon(blackIcon);
+        } else {
+          layer.setIcon(redIcon);
+        }
+        layer.bindPopup("<h4 style='font-size:12px; text-transform: uppercase; font-style: normal'>" + props.stable_name +
+          "<h4>" + props.old_street_address +
+          "<br>Number of Horses: " + props.horses +
+          "<br>Notes: " + stableNotes + "</h4>"
+        );
+      });
+
+    }; // End updateStables
   </script>
 </body>
 
