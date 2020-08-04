@@ -1,6 +1,6 @@
 {
 "type": "FeatureCollection",
-"name": "epizootic_calendar_1",
+"name": "epizootic_calendar_a",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
 "features": [
 { "type": "Feature", "properties": { "stable_name": "Akhurst & Daft", "old_street_address": "Corner of State and 25th St.", "longitude": -87.62708135, "latitude": 41.84722141, "horses": "60", "2405087": null, "2405088": null, "2405089": null, "2405090": null, "2405091": null, "2405092": null, "2405093": null, "2405094": null, "2405095": null, "2405096": null, "2405097": null, "2405098": "Six horses are coughing and appear \"cold, dull, and dampish.\"", "2405099": "Impacted.", "2405100": "Impacted.", "2405101": "Impacted.", "2405102": "Impacted.", "2405103": "Impacted.", "2405104": "Impacted.", "2405105": "Impacted.", "2405106": "Impacted.", "2405107": "Impacted.", "2405108": "Impacted.", "2405109": "Impacted.", "2405110": "Impacted.", "2405111": "Impacted.", "2405112": "Impacted.", "2405113": "Impacted.", "2405086": null }, "geometry": { "type": "Point", "coordinates": [ -87.62708, 41.84722 ] } },

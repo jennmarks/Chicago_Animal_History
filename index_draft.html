@@ -66,8 +66,7 @@
     h3 {
       font-family: 'Lato', sans-serif;
       padding: 0px;
-      font-size: 16px;
-      margin-left: 5px;
+      font-size: 13px;
       font-weight: bold;
     }
 
@@ -80,10 +79,17 @@
     }
 
     h5 {
-      font-family: 'Old Standard TT', serif;
-      font-style: italic;
+      font-family: 'Roboto', sans-serif;
       padding-bottom: 0px;
       font-size: 13px;
+      font-weight: lighter;
+    }
+
+    h6 {
+      font-family: 'Roboto', sans-serif;
+      padding: 0px;
+      font-size: 12px;
+      line-height: 13px;
       font-weight: lighter;
     }
 
@@ -92,7 +98,7 @@
       position: fixed;
       bottom: 0px;
       width: 100%;
-      top: 70px;
+      top: 75px;
     }
 
     /* Set time slider styles */
@@ -178,7 +184,7 @@
   <!-- ui sliders -->
   <div id='slider' class='leaflet-control'>
     <!-- Use the first and last year of the time data as the min and max. Set the initial value as the first year. Set the steps at one year. -->
-    <input type='range' min="2405087" max="2405113" value="2405087" step="1" class="slider" />
+    <input type='range' min="2405086" max="2405113" value="2405086" step="1" class="slider" />
   </div>
 
   <!-- temporal legends -->
@@ -187,7 +193,7 @@
   </div>
 
   <!-- button-dependent info window -->
-  <div id="dialog" class="info" title="About this map">
+  <div id="dialog" class="info" title="About This Map">
     <h4>Please fill this area with explanatory text about the map, data, and data
       sources. You can also provide some background about your project and research
       activities.<br><br>
@@ -196,6 +202,12 @@
       2. Gray, O.W. "Grays Atlas Map of Chicago. 1873." Chicago - David Rumsey Historic Map Collection, Cartography Associates, 2020, https://www.davidrumsey.com/luna/servlet/detail/RUMSEY~8~1~264506~5524868.<br>
       3. Robinson, Elisha. "Robinson's Atlas of the City of Chicago." Robinson's Map of Chicago (Entire), 1886, Chicago Historical Society/Northwestern University, 2005, https://www.encyclopedia.chicagohistory.org/pages/11479.html.
     </h4>
+  </div>
+  <!-- end button-dependent info window -->
+
+  <!-- button-dependent info window -->
+  <div id="info" class="info" title="Data Lacking Geographic Coordinates">
+    <h4><span></span></h4>
   </div>
   <!-- end button-dependent info window -->
 
@@ -283,11 +295,12 @@
       .defer(d3.json, 'data/South_Western.geojson') // Add more files if needed
       .defer(d3.json, 'data/Market.geojson') // Add more files if needed
       .defer(d3.json, 'data/epizootic_calendar_1.geojson')
+      .defer(d3.json, 'data/epizootic_calendar_2.json')
       .await(drawMap); // Load the layers after the map loads
 
     // Provide instructions for drawing the map
     function drawMap(err, data1, data2, data3, data4, data5, data6, data7, data8,
-      data9, data10, data11, data12, data13, data14, data15, data16, data17, stables) {
+      data9, data10, data11, data12, data13, data14, data15, data16, data17, stables, info) {
 
       // Create empty arrays for pushing up lat lng coordinates from each street car geojson
       var reversedLatLngsProcessed1 = [];
@@ -1759,10 +1772,26 @@
           title: 'Tell me about this map',
           onClick: function(btn, map) {
             $("#dialog").dialog({
-              //position: {
-                //my: 'middle',
-                //at: 'top+450'
-              //},
+              width: '400px',
+            });
+          }
+        }]
+      }).addTo(map);
+
+      // create an info window button
+      var infoWindow = L.easyButton({
+        id: 'infoWindow',
+        position: 'topright',
+        states: [{
+          stateName: 'show-info',
+          icon: '<strong>!</strong>',
+          title: 'Other data',
+          onClick: function(btn, map) {
+            $("#info").dialog({
+              position: {
+                my: 'middle',
+                at: 'top+250'
+              },
               width: '400px',
             });
           }
@@ -1772,14 +1801,14 @@
       // declare a variable for the slider date
       var currentDate = $('.slider').val();
 
-      sequenceUI(pointData); // Produces the time slider and sends the layer to it
+      sequenceUI(pointData, info); // Produces the time slider and sends the layer to it
       createTemporalLegend(currentDate); // Produces temporal legend upon map loading
-      updateStables(pointData, currentDate); // Update the stables layer according to the date
+      updateStables(pointData, info, currentDate); // Update the stables layer according to the date
       drawLegend();
 
     }; //end drawMap function
 
-    function sequenceUI(pointData) { // Define sequenceUI
+    function sequenceUI(pointData, info) { // Define sequenceUI
 
       // create Leaflet control for the slider
       var sliderControl = L.control({
@@ -1814,7 +1843,7 @@
         .on('input change', function() {
           var currentDate = $(this).val(); // identifies the year selected
           createTemporalLegend(currentDate);
-          updateStables(pointData, currentDate);
+          updateStables(pointData, info, currentDate);
         });
     }; // End sequenceUI
 
@@ -1871,7 +1900,7 @@
 
     }; // End createTemporalLegend
 
-    function updateStables(pointData, currentDate) { // Define updateStables
+    function updateStables(pointData, info, currentDate) { // Define updateStables
 
       // Declare a variable for your custom icon and style
       var blackIcon = L.icon({
@@ -1903,6 +1932,20 @@
           "<br>Notes: " + stableNotes + "</h4>"
         );
       });
+
+      //var information = info.forEach(element => console.log(element.stable_name));
+      //var information = info.forEach(Object.stable_name);
+
+      var notes = [];
+
+      info.forEach(function(information) {
+        var stableData = information["notes_"+currentDate];
+        if (stableData != '') {
+          notes.push('<h3>' + information.stable_name + '</h3><h6>' + stableData + '</h6><hr>');
+        }
+      });
+
+      $('#info span').html(notes);
 
     }; // End updateStables
 
