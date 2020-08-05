@@ -81,7 +81,7 @@
     h5 {
       font-family: 'Roboto', sans-serif;
       padding-bottom: 0px;
-      font-size: 13px;
+      font-size: 18px;
       font-weight: lighter;
     }
 
@@ -1964,16 +1964,16 @@
           L.DomEvent.stopPropagation(e);
         });
 
-        $(legendContainer).append("<h4 id='legendTitle' style='font-size:15px; font-style: normal; text-transform: uppercase; font-weight: bold'>Map Legend</h4>");
+        $(legendContainer).append("<h4 id='legendTitle' style='font-size:18px; font-style: normal; text-transform: uppercase; font-weight: bold'>Map Legend</h4>");
 
         var symbolsContainer = L.DomUtil.create('div', 'symbolsContainer'),
           grades = ["Stable", "Infected Stable"],
           labels = ["img/icon_stable_simple_black.png", "img/icon_stable_redwhite.png"];
 
         symbolsContainer.innerHTML +=
-          "<h5><img src='img/icon_stable_simple_black.png' height='20' width='20' style='vertical-align: middle; padding: 5px'>" + '  Stable' + '<br>' +
-          "<img src='img/icon_stable_redwhite.png' height='20' width='20' style='vertical-align: middle; padding: 5px'>" + '  Infected Stable' + '<br>' +
-          '<img src="img/icon_streetcar_dg.png" width="30" height="30" style="vertical-align:bottom;">' + '    Streetcar Line' + '</h5>';
+          "<h5><img src='img/icon_stable_simple_black.png' height='25' width='25' style='vertical-align: middle; padding: 5px'>" + '  Stable' + '<br>' +
+          "<img src='img/icon_stable_redwhite.png' height='25' width='25' style='vertical-align: middle; padding: 5px'>" + '  Infected Stable' + '<br>' +
+          '<img src="img/icon_streetcar_dg.png" width="35" height="30" style="vertical-align:bottom;">' + '    Streetcar Line' + '</h5>';
 
         $(legendContainer).append(symbolsContainer);
 
