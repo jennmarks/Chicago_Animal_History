@@ -15,7 +15,7 @@
 
   <!-- Link to css for the info button -->
   <link rel="stylesheet" href="css/easy-button.css">
-  <link rel='stylesheet' href='https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css'>
+  <!-- No longer necessary? <link rel='stylesheet' href='https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css'> -->
 
   <!-- css for control window -->
   <link rel="stylesheet" href="src/L.Control.Window.css">
@@ -205,20 +205,6 @@
     <p class='txt-bold'><span></span></p>
   </div>
 
-  <!-- button-dependent info window -->
-  <div id="dialog" title="About This Map">
-    <h4>Please fill this area with explanatory text about the map, data, and data
-      sources. You can also provide some background about your project and research
-      activities.<br><br>
-      Map Sources:<br>
-      1. U.S. Lake Survey. "Chicago, Illinois 1872." Chicago, Illinois 1872 - American Geographical Society Library Digital Map Collection - UWM Libraries Digital Collections, American Geographical Society Library Digital Map Collection, 2008,
-      https://collections.lib.uwm.edu/digital/collection/agdm/id/1332/.<br>
-      2. Gray, O.W. "Grays Atlas Map of Chicago. 1873." Chicago - David Rumsey Historic Map Collection, Cartography Associates, 2020, https://www.davidrumsey.com/luna/servlet/detail/RUMSEY~8~1~264506~5524868.<br>
-      3. Robinson, Elisha. "Robinson's Atlas of the City of Chicago." Robinson's Map of Chicago (Entire), 1886, Chicago Historical Society/Northwestern University, 2005, https://www.encyclopedia.chicagohistory.org/pages/11479.html.
-    </h4>
-  </div>
-  <!-- end button-dependent info window -->
-
   <!-- Link to the js files -->
   <script src="https://code.jquery.com/jquery-3.2.0.min.js"></script>
   <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
@@ -230,7 +216,7 @@
 
   <!-- for info button support -->
   <script src='js/easy-button.js'></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <!-- no longer necessary? <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
 
   <!-- control window support -->
   <script src='src/L.Control.Window.js'></script>
@@ -1782,9 +1768,11 @@
           icon: '<strong>?</strong>',
           title: 'Tell me about this map',
           onClick: function(btn, map) {
-            $("#dialog").dialog({
-              width: '400px',
-            });
+            var win =  L.control.window(map,{maxWidth:400,modal: true})
+                .title('Tell me about this map')
+                .content('<h4>Please fill this area with explanatory text about the map, data, and data sources. You can also provide some background about your project and research activities.<br><br>Map Sources:<br><br>1. U.S. Lake Survey. "Chicago, Illinois 1872." Chicago, Illinois 1872 - American Geographical Society Library Digital Map Collection - UWM Libraries Digital Collections, American Geographical Society Library Digital Map Collection, 2008, https://collections.lib.uwm.edu/digital/collection/agdm/id/1332/.<br><br>2. Gray, O.W. "Grays Atlas Map of Chicago. 1873." Chicago - David Rumsey Historic Map Collection, Cartography Associates, 2020, https://www.davidrumsey.com/luna/servlet/detail/RUMSEY~8~1~264506~5524868.<br><br>3. Robinson, Elisha. "Robinson&#39s Atlas of the City of Chicago." Robinson&#39s Map of Chicago (Entire), 1886, Chicago Historical Society/Northwestern University, 2005, https://www.encyclopedia.chicagohistory.org/pages/11479.html.</h4>')
+                //.prompt({callback:function(){alert('This is called after OK click!')}})
+                .show()
           }
         }]
       }).addTo(map);
