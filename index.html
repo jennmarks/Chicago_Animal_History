@@ -14,6 +14,11 @@
   <!-- Link the css files -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css">
 
+  <!-- To access the font awesome icon library --> 
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> 
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css"> 
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/v4-shims.css"> 
+
   <!-- Link to css for the info button -->
   <link rel="stylesheet" href="css/easy-button.css">
   <!-- No longer necessary? <link rel='stylesheet' href='https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css'> -->
@@ -1389,7 +1394,7 @@
         position: 'topright',
         states: [{
           stateName: 'show-info',
-          icon: '<strong>C</strong>',
+          icon: '<i class="fas fa-book"></i>',
           title: 'Citations',
           onClick: function(btn, map) {
             var win =  L.control.window(map,{maxWidth:400,modal: true})
@@ -1580,8 +1585,8 @@
         position: 'topright',
         states: [{
           stateName: 'show-info',
-          icon: '<strong>!</strong>',
-          title: 'Other data',
+          icon: '<i class="far fa-clipboard"></i>',
+          title: 'Stable data without spatial references',
           onClick: function(btn, map) { // open the info window on clicking
             var win =  L.control.window(map,{maxWidth:400,modal: true})
                 .title('Influenza Notes - No Addresses<br>' + month + '/' + day + '/' + year + '<hr>')
