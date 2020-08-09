@@ -1376,7 +1376,7 @@
         position: 'topright',
         states: [{
           stateName: 'show-info',
-          icon: '<strong>?</strong>',
+          icon: '<i class="fas fa-info"></i>',
           title: 'About this map',
           onClick: function(btn, map) {
             var win =  L.control.window(map,{maxWidth:400,modal: true})
@@ -1585,7 +1585,7 @@
         position: 'topright',
         states: [{
           stateName: 'show-info',
-          icon: '<i class="far fa-clipboard"></i>',
+          icon: '<i class="fas fa-exclamation-triangle"></i>',
           title: 'Stable data without spatial references',
           onClick: function(btn, map) { // open the info window on clicking
             var win =  L.control.window(map,{maxWidth:400,modal: true})
