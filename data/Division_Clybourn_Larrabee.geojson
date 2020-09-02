@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "Division_Clybourn_Larrabee",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 1, "line": "Division, Clybourn, and Larrabee" }, "geometry": { "type": "MultiLineString", "coordinates": [ [ [ -87.63147, 41.90393 ], [ -87.63477, 41.90388 ], [ -87.63839, 41.9038 ], [ -87.63954, 41.90379 ], [ -87.6411, 41.9049 ], [ -87.64329, 41.90647 ], [ -87.64343, 41.91103 ], [ -87.64353, 41.91393 ], [ -87.64359, 41.91593 ], [ -87.64367, 41.91827 ] ] ] } }
+]
+}

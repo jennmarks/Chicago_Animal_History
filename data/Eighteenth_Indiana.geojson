@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "Eighteenth_Indiana",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 1, "line": "18th and Indiana" }, "geometry": { "type": "MultiLineString", "coordinates": [ [ [ -87.62722, 41.85784 ], [ -87.62476, 41.85787 ], [ -87.62238, 41.8579 ], [ -87.62236, 41.85722 ], [ -87.62232, 41.85551 ], [ -87.62222, 41.85262 ], [ -87.62217, 41.85094 ], [ -87.62212, 41.84901 ], [ -87.62208, 41.84733 ], [ -87.62205, 41.84562 ], [ -87.62199, 41.84344 ], [ -87.62194, 41.84202 ], [ -87.62184, 41.83851 ] ] ] } }
+]
+}

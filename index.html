@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="shortcut icon" type="image/x-icon" href="img/icon_stable_simple_red.png"/>
+
+<head>
+  <meta charset="utf-8">
+  <!-- The title of the web page -->
+  <title>Chicago Epizoozy 1872</title>
+
+  <!-- Link to fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+
+  <!-- Link the css files -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/leaflet.css">
+
+  <!-- To access the font awesome icon library --> 
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> 
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css"> 
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/v4-shims.css"> 
+
+  <!-- Link to css for the info button -->
+  <link rel="stylesheet" href="css/easy-button.css">
+  <!-- No longer necessary? <link rel='stylesheet' href='https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css'> -->
+
+  <!-- css for control window -->
+  <link rel="stylesheet" href="src/L.Control.Window.css">
+
+  <!-- The rest of the css -->
+  <style>
+    /* This declares the following code to be css */
+
+    body {
+      margin: 0px;
+      height: 100%;
+      width: 100%;
+    }
+
+    /* Add banner to header background */
+    header {
+      position: fixed;
+      top: 0px;
+      width: 100%;
+      height: 100px;
+      background-color: #000000;
+      box-shadow: 0px 0px 5px black;
+      z-index: 800;
+    }
+
+    /* Set font styles */
+    h1 {
+      font-family: 'Lato', sans-serif;
+      color: white;
+      font-size: 22px;
+      display: inline-block;
+      margin-top: 0.5em;
+      margin-bottom: 0.0em;
+      margin-left: 0.5em;
+      margin-right: 0;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      font-family: 'Roboto', sans-serif;
+      font-size: 17px;
+      color: white;
+      display: inline-block;
+      margin-top: 0.25em;
+      margin-bottom: 0.0em;
+      margin-left: 0.75em;
+      margin-right: 0;
+      font-weight: normal;
+    }
+
+    h3 {
+      font-family: 'Lato', sans-serif;
+      padding: 0px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    h4 {
+      font-family: 'Roboto', sans-serif;
+      padding: 0px;
+      font-size: 13px;
+      line-height: 16px;
+      font-weight: lighter;
+    }
+
+    h5 {
+      font-family: 'Roboto', sans-serif;
+      padding-bottom: 0px;
+      font-size: 18px;
+      font-weight: lighter;
+    }
+
+    h6 {
+      font-family: 'Roboto', sans-serif;
+      padding: 0px;
+      font-size: 12px;
+      line-height: 13px;
+      font-weight: lighter;
+    }
+
+    h7 {
+      font-family: 'Lato', sans-serif;
+      padding: 0px;
+      font-size: 16px;
+      line-height: 13px;
+      font-weight: lighter;
+    }
+
+    h8 {
+      font-family: 'Roboto', sans-serif;
+      padding: 0px;
+      font-size: 12px;
+      line-height: 13px;
+      font-weight: lighter;
+    }
+
+    /* Set map parameters */
+    #map {
+      position: fixed;
+      bottom: 0px;
+      width: 100%;
+      top: 100px;
+    }
+
+    /* Set time slider styles */
+    #slider {
+      position: absolute;
+      height: 25px;
+      bottom: 10px;
+      left: 125px;
+      z-index: 1000;
+      background-color: #FFFFFF;
+      border-radius: 3px;
+      box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Set temporal legend styles */
+    #temporal {
+      height: 25px;
+      bottom: 10px;
+      width: 94px;
+      background-color: #FFFFFF;
+      border-radius: 3px;
+      box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Set the styles for the text span in the temporal legend */
+    #temporal span {
+      font-family: 'Lato', sans-serif;
+      font-weight: normal;
+      position: absolute;
+      font-size: 15px;
+      bottom: 1px;
+      left: 6px;
+    }
+
+    /* Add legend styles */
+    .legend {
+      padding: 0px 10px 6px 10px;
+      background: white;
+      background: rgba(255, 255, 255, 1.0);
+      box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.3);
+      border-radius: 3px;
+      position: absolute;
+      bottom: 10px;
+      right: 5px;
+    }
+
+    .temporal-legend {
+      padding: 0px 10px 6px 10px;
+      background: white;
+      background: rgba(255, 255, 255, 1.0);
+      box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.3);
+      border-radius: 3px;
+    }
+
+    .leaflet-control-layers-list {
+      font-family: 'Roboto', sans-serif;
+      font-weight: normal;
+      position: absolute;
+      font-size: 14px;
+    }
+
+    .leaflet-bottom {
+      z-index: 800 !important;
+    }
+
+    .leaflet-control-scale {
+      right: 200px;
+    }
+
+    .title {
+      color: black;
+      margin-top: 0.0em;
+      margin-bottom: 0.0em;
+      margin-left: 0.0em;
+      margin-right: 0.0em;
+    }
+
+    /* Sort of works to restyle info window title -->
+    div {
+      font-family: 'Old Standard TT', serif;
+    }
+    */
+  </style> <!-- Escape the css code -->
+
+</head>
+
+<body>
+  <header>
+    <h1>Chicago Epizoozy, 1872</h1><br>
+    <h2>Jennifer Marks, The University of Iowa Department of History</h2><br>
+    <h2>with Jay Bowen, The University of Iowa Digital Scholarship & Publishing Studio</h2>
+  </header>
+
+  <!-- The map will go inside this div below -->
+  <div id="map"></div>
+
+  <!-- ui sliders -->
+  <div id='slider' class='leaflet-control'>
+    <!-- Use the first and last year of the time data as the min and max. Set the initial value as the first year. Set the steps at one year. -->
+    <input type='range' min="2405086" max="2405113" value="2405086" step="1" class="slider" />
+  </div>
+
+  <!-- temporal legends -->
+  <div id='temporal'>
+    <p class='txt-bold'><span></span></p>
+  </div>
+
+  <!-- Link to the js files -->
+  <script src="https://code.jquery.com/jquery-3.2.0.min.js"></script>
+  <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+  <script src='https://api.mapbox.com/mapbox.js/v3.2.1/mapbox.js'></script>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="js/MovingMarker.js"></script>
+  <!-- for icon markers -->
+  <script src="js/leaflet.extra-markers.min.js"></script>
+
+  <!-- for info button support -->
+  <script src='js/easy-button.js'></script>
+  <!-- no longer necessary? <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
+
+  <!-- control window support -->
+  <script src='src/L.Control.Window.js'></script>
+
+  <!-- The rest of the JavaScript -->
+  <script>
+    // Initialize the map
+    var map = L.map('map', {
+      center: [41.88035512871957, -87.6652759178263], // You can hardcode the center of the map on specific coordinates
+      zoom: 13, // You can hardcode the initial zoom level
+      minZoom: 10,
+      maxZoom: 18
+    });
+
+    // Base layers
+    // .. Voyager
+    var voyager = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png', {
+      minZoom: 10,
+      maxZoom: 18,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy;<a href="https://carto.com/attribution">CARTO</a>'
+    }).addTo(map);
+
+    // .. TMS
+    var lyr1872 = L.tileLayer('./chicago_map_tiles/chicago_1872/{z}/{x}/{y}.png', {
+      tms: true,
+      opacity: 1.0,
+      attribution: "",
+      minZoom: 10,
+      maxZoom: 15
+    }).addTo(map);
+    var lyr1873 = L.tileLayer('./chicago_map_tiles/chicago_1873/{z}/{x}/{y}.png', {
+      tms: true,
+      opacity: 1.0,
+      attribution: "",
+      minZoom: 11,
+      maxZoom: 15
+    });
+    var lyr1886 = L.tileLayer('./chicago_map_tiles/chicago_1886/{z}/{x}/{y}.png', {
+      tms: true,
+      opacity: 1.0,
+      attribution: "",
+      minZoom: 11,
+      maxZoom: 18
+    });
+    //  .. void background
+    var voidMap = L.tileLayer("", {
+      minZoom: 10,
+      maxZoom: 18
+    });
+
+    // Add a scale bar
+    L.control.scale({
+      position: 'bottomright' // Position the scale bar at the bottom-right corner
+    }).addTo(map);
+
+    // Load your data asynchronously
+    d3.queue()
+      .defer(d3.json, 'data/State.geojson') // Provide the path to your data file 1
+      .defer(d3.json, 'data/Randolph_Bryan_Lake_Madison.geojson') // Add more files if needed 2
+      .defer(d3.json, 'data/Archer.geojson') // Add more files if needed 3
+      .defer(d3.json, 'data/Stock_Yards_41st.geojson') // Add more files if needed 4
+      .defer(d3.json, 'data/Clark.geojson') // Add more files if needed 5
+    //.defer(d3.json, 'data/Halsted_Milwaukee.geojson') // Add more files if needed 6
+      .defer(d3.json, 'data/Chicago.geojson') // Add more files if needed 7
+      .defer(d3.json, 'data/Halsted_Blue_Island.geojson') // Add more files if needed 8
+      // .defer(d3.json, 'data/Division_Clybourn_Larrabee.geojson') // Add more files if needed 9
+    //  .defer(d3.json, 'data/Sedgwick.geojson') // Add more files if needed 10
+      .defer(d3.json, 'data/TwentySecond_Cottage_Grove.geojson') // Add more files if needed 11
+      .defer(d3.json, 'data/Fifth.geojson') // Add more files if needed 12
+    //  .defer(d3.json, 'data/Eighteenth_Indiana.geojson') // Add more files if needed 13
+      // .defer(d3.json, 'data/Clinton_12th_Jefferson_VanBuren.geojson') // Add more files if needed 14
+      //.defer(d3.json, 'data/Jefferson_Meagher.geojson') // Add more files if needed 15
+      // .defer(d3.json, 'data/South_Western.geojson') // Add more files if needed 16
+      //.defer(d3.json, 'data/Market.geojson') // Add more files if needed 17
+      .defer(d3.json, 'data/streetcar_line_Clybourn.geojson') //data20
+      .defer(d3.json, 'data/streetcar_line_Indiana_2.geojson') //data21
+      .defer(d3.json, 'data/streetcar_line_VanBuren.geojson') //data22
+      .defer(d3.json, 'data/epizootic_calendar_1_updated.geojson') //18
+      .defer(d3.json, 'data/epizootic_calendar_2.json') //19
+      .await(drawMap); // Load the layers after the map loads
+
+    // Provide instructions for drawing the map
+    function drawMap(err, data1, data2, data3, data4, data5, data7, data8,
+      data11, data12, data20, data21, data22, stables, info) {
+
+      // Create empty arrays for pushing up lat lng coordinates from each street car geojson
+      var reversedLatLngsProcessed1 = [];
+      var reversedLatLngsProcessed2 = [];
+      var reversedLatLngsProcessed3 = [];
+      var reversedLatLngsProcessed4 = [];
+      var reversedLatLngsProcessed5 = [];
+      var reversedLatLngsProcessed6 = [];
+      var reversedLatLngsProcessed7 = [];
+      var reversedLatLngsProcessed8 = [];
+      var reversedLatLngsProcessed9 = [];
+      var reversedLatLngsProcessed10 = [];
+      var reversedLatLngsProcessed11 = [];
+      var reversedLatLngsProcessed12 = [];
+      var reversedLatLngsProcessed14 = [];
+      var reversedLatLngsProcessed15 = [];
+      var reversedLatLngsProcessed16 = [];
+      var reversedLatLngsProcessed17 = [];
+      var reversedLatLngsProcessed20 = [];
+      var reversedLatLngsProcessed21 = [];
+      var reversedLatLngsProcessed22 = [];
+
+      var dataOne = L.geoJson(data1, { // Define the first data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: '#1E3A51',
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0]; // Get the array of all coordinates (in original lng,lat format)
+
+          reversedLatLngs = []; // Create an empty array into which you will push reversed coordinates in lat,lng format
+
+          for (var i = 0; i < initLatLngs.length; i++) { // For each coordinate in initLatLngs...
+            //...switch from lng,lat to lat,lng format and push to reversedLatLngs array
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed1.push(reversedLatLngs); // Push the reversed coordinates to the reversedLatLngsProcessed array
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h4>" + props.line + "</h4>");
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataOne.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End first layer
+
+      var dataTwo = L.geoJson(data2, { // Define the second data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: '#1E3A51',
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0];
+
+          reversedLatLngs = [];
+
+          for (var i = 0; i < initLatLngs.length; i++) {
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed2.push(reversedLatLngs);
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h4>" + props.line + "</h4>");
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataTwo.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End second layer
+
+      var dataThree = L.geoJson(data3, { // Define the third data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: '#1E3A51',
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0];
+
+          reversedLatLngs = [];
+
+          for (var i = 0; i < initLatLngs.length; i++) {
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed3.push(reversedLatLngs);
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h4>" + props.line + "</h4>");
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataThree.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End third layer
+
+      var dataFour = L.geoJson(data4, { // Define the fourth data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: '#1E3A51',
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0];
+
+          reversedLatLngs = [];
+
+          for (var i = 0; i < initLatLngs.length; i++) {
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed4.push(reversedLatLngs);
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h4>" + props.line + "</h4>");
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataFour.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End fourth layer
+
+      var dataFive = L.geoJson(data5, { // Define the fifth data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: '#1E3A51',
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0]; // Get the array of all coordinates (in original lng,lat format)
+
+          reversedLatLngs = []; // Create an empty array into which you will push reversed coordinates in lat,lng format
+
+          for (var i = 0; i < initLatLngs.length; i++) { // For each coordinate in initLatLngs...
+            //...switch from lng,lat to lat,lng format and push to reversedLatLngs array
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed5.push(reversedLatLngs); // Push the reversed coordinates to the reversedLatLngsProcessed array
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h4>" + props.line + "</h4>");
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataFive.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End fifth layer
+
+      var dataSeven = L.geoJson(data7, { // Define the seventh data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: '#1E3A51',
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0]; // Get the array of all coordinates (in original lng,lat format)
+
+          reversedLatLngs = []; // Create an empty array into which you will push reversed coordinates in lat,lng format
+
+          for (var i = 0; i < initLatLngs.length; i++) { // For each coordinate in initLatLngs...
+            //...switch from lng,lat to lat,lng format and push to reversedLatLngs array
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed7.push(reversedLatLngs); // Push the reversed coordinates to the reversedLatLngsProcessed array
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h4>" + props.line + "</h4>");
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataSeven.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End seventh layer
+
+      var dataEight = L.geoJson(data8, { // Define the eighth data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: '#1E3A51',
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0]; // Get the array of all coordinates (in original lng,lat format)
+
+          reversedLatLngs = []; // Create an empty array into which you will push reversed coordinates in lat,lng format
+
+          for (var i = 0; i < initLatLngs.length; i++) { // For each coordinate in initLatLngs...
+            //...switch from lng,lat to lat,lng format and push to reversedLatLngs array
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed8.push(reversedLatLngs); // Push the reversed coordinates to the reversedLatLngsProcessed array
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h4>" + props.line + "</h4>");
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataEight.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End eighth layer
+
+      var dataEleven = L.geoJson(data11, { // Define the eleventh data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: '#1E3A51',
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0]; // Get the array of all coordinates (in original lng,lat format)
+
+          reversedLatLngs = []; // Create an empty array into which you will push reversed coordinates in lat,lng format
+
+          for (var i = 0; i < initLatLngs.length; i++) { // For each coordinate in initLatLngs...
+            //...switch from lng,lat to lat,lng format and push to reversedLatLngs array
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed11.push(reversedLatLngs); // Push the reversed coordinates to the reversedLatLngsProcessed array
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h4>" + props.line + "</h4>");
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataEleven.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End eleventh layer
+
+      var dataTwelve = L.geoJson(data12, { // Define the twelfth data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: '#1E3A51',
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0]; // Get the array of all coordinates (in original lng,lat format)
+
+          reversedLatLngs = []; // Create an empty array into which you will push reversed coordinates in lat,lng format
+
+          for (var i = 0; i < initLatLngs.length; i++) { // For each coordinate in initLatLngs...
+            //...switch from lng,lat to lat,lng format and push to reversedLatLngs array
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed12.push(reversedLatLngs); // Push the reversed coordinates to the reversedLatLngsProcessed array
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h4>" + props.line + "</h4>");
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataTwelve.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End twelfth layer
+
+      var dataTwenty = L.geoJson(data20, { // Define the second data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: '#1E3A51',
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0];
+
+          reversedLatLngs = [];
+
+          for (var i = 0; i < initLatLngs.length; i++) {
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed20.push(reversedLatLngs);
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h4>" + props.line_name + "</h4>");
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataTwenty.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End twentieth layer
+
+      var dataTwentyOne = L.geoJson(data21, { // Define the second data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: '#1E3A51',
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0];
+
+          reversedLatLngs = [];
+
+          for (var i = 0; i < initLatLngs.length; i++) {
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed21.push(reversedLatLngs);
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h4>" + props.line_name + "</h4>");
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataTwentyOne.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End twenty-first layer
+
+      var dataTwentyTwo = L.geoJson(data22, { // Define the second data layer with a variable
+
+        // Style the layer
+        style: function(feature) {
+          return {
+            color: '#1E3A51',
+            weight: 2.5,
+            opacity: 0.75,
+            dashArray: "5,5",
+            lineJoin: "round"
+          };
+        },
+
+        // Restyle on mouseover, reset style on mouseout
+        onEachFeature: function(feature, layer) {
+
+          var initLatLngs = layer.feature.geometry.coordinates[0];
+
+          reversedLatLngs = [];
+
+          for (var i = 0; i < initLatLngs.length; i++) {
+            reversedLatLngs.push([initLatLngs[i][1], initLatLngs[i][0]]);
+          }
+
+          reversedLatLngsProcessed22.push(reversedLatLngs);
+
+          var props = layer.feature.properties; // Get the properties of the layer features
+
+          // Bind a popup window to the layer
+          layer.bindPopup("<h4>" + props.line_name + "</h4>");
+
+          layer.on({
+
+            // Define what happens on mouseover
+            mouseover: function(e) {
+              var layer = e.target;
+              layer.setStyle({
+                color: '#3232FF',
+                weight: 3,
+                opacity: 0.75
+              });
+            },
+
+            // Define what happens on mouseout
+            mouseout: function(e) {
+
+              // Reset the layer styles
+              dataTwentyTwo.resetStyle(e.target);
+
+            },
+
+          });
+        },
+
+      }); // End twenty-second layer
+
+      // Get the number of line segments in each line geojson
+      var multiplier1 = reversedLatLngsProcessed1[0].length - 1;
+      var multiplier2 = reversedLatLngsProcessed2[0].length - 1;
+      var multiplier3 = reversedLatLngsProcessed3[0].length - 1;
+      var multiplier4 = reversedLatLngsProcessed4[0].length - 1;
+      var multiplier5 = reversedLatLngsProcessed5[0].length - 1;
+      var multiplier7 = reversedLatLngsProcessed7[0].length - 1;
+      var multiplier8 = reversedLatLngsProcessed8[0].length - 1;
+      var multiplier11 = reversedLatLngsProcessed11[0].length - 1;
+      var multiplier12 = reversedLatLngsProcessed12[0].length - 1;
+      var multiplier20 = reversedLatLngsProcessed20[0].length - 1;
+      var multiplier21 = reversedLatLngsProcessed21[0].length - 1;
+      var multiplier22 = reversedLatLngsProcessed22[0].length - 1;
+      // Assign a speed for the markers to travel over each line segment
+      var speeds1 = ((', 100000'.repeat(multiplier1)).replace(', ', '')).split(', ').map(Number);
+      var speeds2 = ((', 10000'.repeat(multiplier2)).replace(', ', '')).split(', ').map(Number);
+      var speeds3 = ((', 10000'.repeat(multiplier3)).replace(', ', '')).split(', ').map(Number);
+      var speeds4 = ((', 10000'.repeat(multiplier4)).replace(', ', '')).split(', ').map(Number);
+      var speeds5 = ((', 10000'.repeat(multiplier5)).replace(', ', '')).split(', ').map(Number);
+      var speeds7 = ((', 10000'.repeat(multiplier7)).replace(', ', '')).split(', ').map(Number);
+      var speeds8 = ((', 10000'.repeat(multiplier8)).replace(', ', '')).split(', ').map(Number);
+      var speeds11 = ((', 10000'.repeat(multiplier11)).replace(', ', '')).split(', ').map(Number);
+      var speeds12 = ((', 10000'.repeat(multiplier11)).replace(', ', '')).split(', ').map(Number);
+      var speeds20 = ((', 10000'.repeat(multiplier20)).replace(', ', '')).split (', ').map(Number);
+      var speeds21 = ((', 10000'.repeat(multiplier21)).replace(', ', '')).split (', ').map(Number);
+      var speeds22 = ((', 10000'.repeat(multiplier22)).replace(', ', '')).split (', ').map(Number);
+      var customIcon = L.ExtraMarkers.icon({
+        //icon: 'fas fa-horse',
+        //prefix: 'fa',
+        //markerColor: 'blue-dark',
+        innerHTML: '<img src="img/icon_streetcar_dg.png" width="60" height="50" style="vertical-align:bottom; position: relative; right:13px;">' // overrides icon with selected image
+        //iconColor: 'white'
+      });
+
+      var marker1 = L.Marker.movingMarker(reversedLatLngsProcessed1[0], speeds1);
+      marker1.setIcon(customIcon);
+      marker1.on('mouseover', function() {
+        marker1.bindPopup('<h4>State Street</h4>').openPopup();
+      });
+      marker1.on('mouseout', function() {
+        marker1.closePopup();
+      });
+      marker1.once('click', function() {
+        marker1.start();
+        marker1.on('click', function() {
+          if (marker1.isRunning()) {
+            marker1.pause();
+          } else {
+            marker1.start();
+          };
+        });
+        setTimeout(function() {
+          marker1.bindPopup('<h4>State Street</h4>').openPopup();
+        }, 100000);
+      });
+
+      var marker2 = L.Marker.movingMarker(reversedLatLngsProcessed2[0], speeds2);
+      marker2.setIcon(customIcon);
+      marker2.on('mouseover', function() {
+        marker2.bindPopup('<h4>Randolph, Bryan, Lake, and Madison Streets</h4>').openPopup();
+      });
+      marker2.on('mouseout', function() {
+        marker2.closePopup();
+      });
+      marker2.once('click', function() {
+        marker2.start();
+        marker2.on('click', function() {
+          if (marker2.isRunning()) {
+            marker2.pause();
+          } else {
+            marker2.start();
+          };
+        });
+        setTimeout(function() {
+          marker2.bindPopup('<h4>Randolph, Bryan, Lake, and Madison Streets</h4>').openPopup();
+        }, 10000);
+      });
+
+      var marker3 = L.Marker.movingMarker(reversedLatLngsProcessed3[0], speeds3);
+      marker3.setIcon(customIcon);
+      marker3.on('mouseover', function() {
+        marker3.bindPopup('<h4>Archer Avenue</h4>').openPopup();
+      });
+      marker3.on('mouseout', function() {
+        marker3.closePopup();
+      });
+      marker3.once('click', function() {
+        marker3.start();
+        marker3.on('click', function() {
+          if (marker3.isRunning()) {
+            marker3.pause();
+          } else {
+            marker3.start();
+          };
+        });
+        setTimeout(function() {
+          marker3.bindPopup('<h4>Archer Avenue</h4>').openPopup();
+        }, 10000);
+      });
+
+      var marker4 = L.Marker.movingMarker(reversedLatLngsProcessed4[0], speeds4);
+      marker4.setIcon(customIcon);
+      marker4.on('mouseover', function() {
+        marker4.bindPopup('<h4>41st Street and Union Stock Yards</h4>').openPopup();
+      });
+      marker4.on('mouseout', function() {
+        marker4.closePopup();
+      });
+      marker4.once('click', function() {
+        marker4.start();
+        marker4.on('click', function() {
+          if (marker4.isRunning()) {
+            marker4.pause();
+          } else {
+            marker4.start();
+          };
+        });
+        setTimeout(function() {
+          marker4.bindPopup('<h4>41st Street and Union Stock Yards</h4>').openPopup();
+        }, 10000);
+      });
+
+      var marker5 = L.Marker.movingMarker(reversedLatLngsProcessed5[0], speeds5);
+      marker5.setIcon(customIcon);
+      marker5.on('mouseover', function() {
+        marker5.bindPopup('<h4>Clark Street</h4>').openPopup();
+      });
+      marker5.on('mouseout', function() {
+        marker5.closePopup();
+      });
+      marker5.once('click', function() {
+        marker5.start();
+        marker5.on('click', function() {
+          if (marker5.isRunning()) {
+            marker5.pause();
+          } else {
+            marker5.start();
+          };
+        });
+        setTimeout(function() {
+          marker5.bindPopup('<h4>Clark Street</h4>').openPopup();
+        }, 10000);
+      });
+
+      var marker7 = L.Marker.movingMarker(reversedLatLngsProcessed7[0], speeds7);
+      marker7.setIcon(customIcon);
+      marker7.on('mouseover', function() {
+        marker7.bindPopup('<h4>Chicago Avenue</h4>').openPopup();
+      });
+      marker7.on('mouseout', function() {
+        marker7.closePopup();
+      });
+      marker7.once('click', function() {
+        marker7.start();
+        marker7.on('click', function() {
+          if (marker7.isRunning()) {
+            marker7.pause();
+          } else {
+            marker7.start();
+          };
+        });
+        setTimeout(function() {
+          marker7.bindPopup('<h4>Chicago Avenue</h4>').openPopup();
+        }, 10000);
+      });
+
+      var marker8 = L.Marker.movingMarker(reversedLatLngsProcessed8[0], speeds8);
+      marker8.setIcon(customIcon);
+      marker8.on('mouseover', function() {
+        marker8.bindPopup('<h4>Halsted St. and Blue Island Ave.</h4>').openPopup();
+      });
+      marker8.on('mouseout', function() {
+        marker8.closePopup();
+      });
+      marker8.once('click', function() {
+        marker8.start();
+        marker8.on('click', function() {
+          if (marker8.isRunning()) {
+            marker8.pause();
+          } else {
+            marker8.start();
+          };
+        });
+        setTimeout(function() {
+          marker8.bindPopup('<h4>Halsted St. and Blue Island Ave.</h4>').openPopup();
+        }, 10000);
+      });
+
+      var marker11 = L.Marker.movingMarker(reversedLatLngsProcessed11[0], speeds11);
+      marker11.setIcon(customIcon);
+      marker11.on('mouseover', function() {
+        marker11.bindPopup('<h4>22nd St. and Cottage Grove Ave.</h4>').openPopup();
+      });
+      marker11.on('mouseout', function() {
+        marker11.closePopup();
+      });
+      marker11.once('click', function() {
+        marker11.start();
+        marker11.on('click', function() {
+          if (marker11.isRunning()) {
+            marker11.pause();
+          } else {
+            marker11.start();
+          };
+        });
+        setTimeout(function() {
+          marker11.bindPopup('<h4>22nd St. and Cottage Grove Ave.</h4>').openPopup();
+        }, 10000);
+      });
+
+      var marker12 = L.Marker.movingMarker(reversedLatLngsProcessed12[0], speeds12);
+      marker12.setIcon(customIcon);
+      marker12.on('mouseover', function() {
+        marker12.bindPopup('<h4>Fifth Avenue</h4>').openPopup();
+      });
+      marker12.on('mouseout', function() {
+        marker12.closePopup();
+      });
+      marker12.once('click', function() {
+        marker12.start();
+        marker12.on('click', function() {
+          if (marker12.isRunning()) {
+            marker12.pause();
+          } else {
+            marker12.start();
+          };
+        });
+        setTimeout(function() {
+          marker12.bindPopup('<h4>Fifth Avenue</h4>').openPopup();
+        }, 10000);
+      });
+
+      var marker20 = L.Marker.movingMarker(reversedLatLngsProcessed20[0], speeds20);
+      marker20.setIcon(customIcon);
+      marker20.on('mouseover', function() {
+        marker20.bindPopup('<h4>Clybourn Avenue</h4>').openPopup();
+      });
+      marker20.on('mouseout', function() {
+        marker20.closePopup();
+      });
+      marker20.once('click', function() {
+        marker20.start();
+        marker20.on('click', function() {
+          if (marker20.isRunning()) {
+            marker20.pause();
+          } else {
+            marker20.start();
+          };
+        });
+        setTimeout(function() {
+          marker20.bindPopup('<h4>Clybourn Avenue</h4>').openPopup();
+        }, 10000);
+      });
+
+      var marker21 = L.Marker.movingMarker(reversedLatLngsProcessed21[0], speeds21);
+      marker21.setIcon(customIcon);
+      marker21.on('mouseover', function() {
+        marker21.bindPopup('<h4>Indiana</h4>').openPopup();
+      });
+      marker21.on('mouseout', function() {
+        marker21.closePopup();
+      });
+      marker21.once('click', function() {
+        marker21.start();
+        marker21.on('click', function() {
+          if (marker21.isRunning()) {
+            marker21.pause();
+          } else {
+            marker21.start();
+          };
+        });
+        setTimeout(function() {
+          marker21.bindPopup('<h4>Indiana</h4>').openPopup();
+        }, 10000);
+      });
+
+      var marker22 = L.Marker.movingMarker(reversedLatLngsProcessed22[0], speeds22);
+      marker22.setIcon(customIcon);
+      marker22.on('mouseover', function() {
+        marker22.bindPopup('<h4>Van Buren</h4>').openPopup();
+      });
+      marker22.on('mouseout', function() {
+        marker22.closePopup();
+      });
+      marker22.once('click', function() {
+        marker22.start();
+        marker22.on('click', function() {
+          if (marker22.isRunning()) {
+            marker22.pause();
+          } else {
+            marker22.start();
+          };
+        });
+        setTimeout(function() {
+          marker22.bindPopup('<h4>Van Buren</h4>').openPopup();
+        }, 10000);
+      });
+
+      // define the stables data
+      var pointData = L.geoJson(stables);
+
+      // make layer groups out of each streetcar line and marker
+      var stateLine = L.layerGroup([dataOne, marker1]);
+      var randolphLine = L.layerGroup([dataTwo, marker2]);
+      var archerLine = L.layerGroup([dataThree, marker3]);
+      var stockYardsLine = L.layerGroup([dataFour, marker4]);
+      var clarkLine = L.layerGroup([dataFive, marker5]);
+      var clybournLine = L.layerGroup ([dataTwenty, marker20]);
+      var chicagoLine = L.layerGroup([dataSeven, marker7]);
+      var blueIslandLine = L.layerGroup([dataEight, marker8]);
+      var cottageGroveLine = L.layerGroup([dataEleven, marker11]);
+      var fifthLine = L.layerGroup([dataTwelve, marker12]);
+      var indiana2Line = L.layerGroup([dataTwentyOne, marker21]);
+      var vanburenLine = L.layerGroup([dataTwentyTwo, marker22]);
+      // define the overlays
+      var overlays = {
+        "Horse Stables": pointData,
+        "22nd & Cottage Grove": cottageGroveLine,
+        "41st -- Stock Yards": stockYardsLine,
+        "Archer": archerLine,
+        "Chicago": chicagoLine,
+        "Clark": clarkLine,
+        "Clybourn": clybournLine,
+        "Fifth": fifthLine,
+        "Halsted & Blue Island": blueIslandLine,
+        "Indiana": indiana2Line,
+        "Randolph -- Madison": randolphLine,
+        "State": stateLine,
+        "Van Buren": vanburenLine,
+      };
+
+      // define the basemaps
+      var basemaps = {
+        "1872 Map": lyr1872,
+        "1873 Map": lyr1873,
+        "1886 Map": lyr1886,
+        "Contemporary Map": voidMap
+      };
+
+      // make a layer control and add it to the map
+      L.control.layers(basemaps, overlays).addTo(map);
+
+      // create an info button to describe the map and supporting data
+      var infoButton = L.easyButton({
+        id: 'infoButton',
+        position: 'topright',
+        states: [{
+          stateName: 'show-info',
+          icon: '<i class="fas fa-info"></i>',
+          title: 'About this map',
+          onClick: function(btn, map) {
+            var win =  L.control.window(map,{maxWidth:400,modal: true})
+                .title('About this Project')
+                .content('<h8>This map brings together GIS mapping software and data from historical maps, city directories, and newspaper articles to visualize the spread and scope of the 1872 Equine Influenza Epizootic in Chicago, Illinois.<br><br>In late October 1872, an outbreak of equine influenza—known popularly as the “epizoozy”—tore through the public and private stables of urban North America. The virulent strain travelled along railroad routes, infecting tens of thousands of horses from Ontario to New York to Boston. Chicago felt the epizootic acutely, as much of the city and many of its horses had burned in the Great Fire a year earlier. With their motors in respiratory distress, Chicago’s cabs, omnibuses, streetcars, and construction equipment halted. Men, women, and children walked. Companies purchased oxen to deliver goods and luggage between railroad depots. Even dogs and goats were put to work.<br><br>Data for this mapping project began with newspaper coverage of the outbreak, which provided lists of livery stables and streetcar barns, virus case numbers in each of these spaces, as well as narratives of particularly sick horses and proprietors in denial. But this story was fragmented. Printed on different pages of the newspaper across nearly a month in the fall of 1872, this data was also rife with errors and inconsistent reporting. Cross-referencing addresses with city directories and fire insurance maps, clarified key names, addresses, and case counts of the outbreak.<br><br>These addresses, case counts, and narratives were then plotted on to georeferenced historical maps. The copious icons denote the proliferation of horse barns and horse industry in the city. Retracing streetcar lines and animating the icons underscores the movement of animal labor in the city. This illustrates one of the most important facts about the epizootic: it spread quickly because horses moved. Plotting Chicago’s transportation barns and stables with a feature that tracks symptoms and cases over time reveals how the disease spread throughout the geography of the city and emphasizes the pervasiveness of animal bodies.<br><br>The 1872 Equine Influenza Epizootic may have shut down Chicago, but it is precisely through this shutdown that we can better understand how the interconnected networks of horse-powered transportation functioned in the growing metropolis at the turn of the century.<br><br>This map was made possible by a Digital Studio Summer Fellowship through the University of Iowa Library’s Digital Scholarship and Publishing Studio. Jennifer Marks, a Ph.D. candidate in History at the University of Iowa, and Jay Bowen, the Digital Scholarship and Publishing Studio’s GIS Specialist, collaborated over eight weeks to build the map using QGIS and Atom software.<br><br>This map forms part of Jennifer’s forthcoming dissertation, Creature’s Metropolis: How Animals and Humans Built Chicago, 1870-1930. She can be contacted at jennifer-marks@uiowa.edu.</h8>')
+                //.prompt({callback:function(){alert('This is called after OK click!')}})
+                .show()
+          }
+        }]
+      }); // do not add to map in order to prevent loading above the button for data without coordinates
+
+      // create a citation button to store citations for sources
+      var citationButton = L.easyButton({
+        id: 'citationButton',
+        position: 'topright',
+        states: [{
+          stateName: 'show-info',
+          icon: '<i class="fas fa-book"></i>',
+          title: 'Citations',
+          onClick: function(btn, map) {
+            var win =  L.control.window(map,{maxWidth:400,modal: true})
+                .title('Works Cited')
+                .content('<h8>Maps:<br><br>Blanchard, Rufus. “Guide Map of Chicago. Published by Rufus Blanchard, 146 Lake St. 1868. Lith. Chas. Shober & Co.” Pocket Map, 25,344. Map Of Chicago And Environs. Compiled And Published By Rufus Blanchard, Chicago, 146 Lake St. Illinois. 1869. (with) Guide Map of Chicago. Published by Rufus Blanchard, 146 Lake St. 1868. Lith. Chas. Shober & Co. (with) Citizen’s Guide For The City of Chicago. Companion to Blanchard’s Map of Chicago. Published By Rufus Blanchard, 146 Lake Street, Chicago. Chicago: David Blanchard, 1869. David Rumsey Map Collection. http://www.davidrumsey.com/maps1877.html. <br><br>Robinson, E. “Robinson’s Atlas of the City of Chicago Illinois; Complete in Five Volumes.” New York, 1886. Encyclopedia of Chicago. http://www.encyclopedia.chicagohistory.org/pages/11479.html.<br><br>U.S. Lake Survey. “Map of the City of Chicago : Projected from a Trigonometrical Survey / and Executed under the Orders of Major C.B. Comstock, Corps of Engineers, and from Local Surveys Made by J.R. Mayer ; Drawn for Engraving by A. de Witzleben.” Still Image, 1:20,000. Washington: U.S. Lake Survey, 1872. American Geographical Society Library Digital Map Collection. American Geographical Society Library, University of Wisconsin-Milwaukee Libraires. https://collections.lib.uwm.edu/digital/collection/agdm/id/1332/.<br><br>Books & City Directories:<br><br>Andreas, Alfred Theodore. History of Chicago: From 1857 until the Fire of 1871. Higginson Book Company, 1885.<br><br>Edwards, Richard. “Edwards’ Anuual Director to the Inhabitants, Institutions, Incorporated Companies, Manufacturing Establishments, Business, Business Firms, Etc., Etc., in the City of Chicago, for 1872.” St. Louis & New York: Edwards & Co. Publishers, 1872. Ancestry.com. https://www.ancestrylibrary.com/imageviewer/collections/2469/images/4528793?ssrc=&backlabel=Return.<br><br>-----. “Edwards Sixteenth Annual Directory of the Inhabitants, Institutions, Manufacturing Establishments and Incorporated Companies of the City of Chicago; Embracing a Complete Business Directory for 1873.” Chicago: Richard Edwards, Publisher, 148 Clark Street, 1873. Ancestry.com. https://www.ancestrylibrary.com/imageviewer/collections/2469/images/4513459?ssrc=&backlabel=Return.<br><br>“The Monthly Business Directory of Chicago.” Chicago: The Western News Company; Culver, Page, Hoyne & Co., Printers, Chicago, March 1872. Ancestry.com. https://www.ancestrylibrary.com/imageviewer/collections/2469/images/41199_1220706242_4027-00000?ssrc=&backlabel=Return.<br><br>Newspaper Articles:<br><br>“A Week Without Horses.” Chicago Tribune. November 10, 1872, First edition. Newspapers.com.<br><br>“All the World Sick.” Chicago Tribune. November 2, 1872, First edition. Newspapers.com.<br><br>“Amusement Review.” Chicago Tribune. November 10, 1872, First edition. Newspapers.com.<br><br>“Board of Health.” Chicago Tribune. October 30, 1872, First edition. Newspapers.com.<br><br>“Boston.” Chicago Tribune. November 11, 1872, First edition. Newspapers.com.<br><br>“Boston, Past and Present.” Chicago Tribune. November 14, 1872, First edition. Newspapers.com.<br><br>“Chicago Dry Goods Market.” Chicago Tribune. November 13, 1872, First edition. Newspapers.com.<br><br>“Convalescent.” Chicago Tribune. November 13, 1872, First edition. Newspapers.com.<br><br>“Dummies and Horses.” Chicago Tribune. November 14, 1872, First edition. Newspapers.com.<br><br>“Epizootic Cured in Three Days.” Chicago Tribune. November 7, 1872, First edition. Newspapers.com.<br><br>“Epizootic, or Horse Disease.” Chicago Tribune. November 5, 1872, First edition. Newspapers.com.<br><br>“Epizoozy.” Chicago Tribune. October 30, 1872, First edition. Newspapers.com.<br><br>“General Notices.” Chicago Tribune. November 5, 1872, First edition. Newspapers.com.<br><br>H. “Steam vs. Horses.” Chicago Tribune. November 9, 1872, First edition. Newspapers.com.<br><br>“Miscellaneous City News.” Chicago Tribune. November 10, 1872, First edition. Newspapers.com.<br><br>“Monetary and Commercial.” Chicago Tribune. October 24, 1872, First edition. Newspapers.com.<br><br>“Monetary and Commercial.” Chicago Tribune. October 29, 1872, First edition. Newspapers.com.<br><br>“Money and Commerce.” Chicago Tribune. November 5, 1872, First edition. Newspapers.com.<br><br>“Money and Commerce.” Chicago Tribune. November 6, 1872, First edition. Newspapers.com.<br><br>“New Motive-Powers.” Chicago Tribune. November 5, 1872, First edition. Newspapers.com.<br><br>“New York.” Chicago Tribune. November 7, 1872, First edition. Newspapers.com.<br><br>“No Title.” Chicago Tribune. October 28, 1872, First edition. Newspapers.com.<br><br>“No Title.” Chicago Tribune. November 4, 1872, First edition. Newspapers.com.<br><br>“No Title.” Chicago Tribune. November 5, 1872, First edition. Newspapers.com.<br><br>“No Title.” Chicago Tribune. November 7, 1872, First edition. Newspapers.com.<br><br>“No Title.” Chicago Tribune. November 10, 1872, First edition. Newspapers.com.<br><br>“No Title.” Chicago Tribune. November 12, 1872, First edition. Newspapers.com.<br><br>“No Title.” Chicago Tribune. November 14, 1872, First edition. Newspapers.com.<br><br>“Our Equine Patients.” Chicago Tribune. November 7, 1872, First edition. Newspapers.com.<br><br>“Our Equine Patients.” Chicago Tribune. November 9, 1872, First edition. Newspapers.com.<br><br>“Our Equine Patients.” Chicago Tribune. November 12, 1872, First edition. Newspapers.com.<br><br>“Our Unhorsed Community.” Chicago Tribune. November 2, 1872, First edition. Newspapers.com.<br><br>“Political Influence of the Horse.” Chicago Tribune. November 3, 1872, First edition. Newspapers.com.<br><br>“Real Estate.” Chicago Tribune. November 10, 1872, First edition. Newspapers.com.<br><br>Rope, Dr. William, and James L. Branson. “The Horse-Disease.” Chicago Tribune. October 28, 1872, First edition. Newspapers.com.<br><br>“Steam in Streets.” Chicago Tribune. November 15, 1872, First edition. Newspapers.com.<br><br>“The City in Brief.” Chicago Tribune. November 3, 1872, First edition. Newspapers.com.<br><br>“The City in Brief.” Chicago Tribune. November 13, 1872, First edition. Newspapers.com.<br><br>“The County Commissioners.” Chicago Tribune. November 5, 1872, First edition. Newspapers.com.<br><br>“The Election.” Chicago Tribune. November 6, 1872, First edition. Newspapers.com.<br><br>“The Epizootic.” Chicago Tribune. November 11, 1872, First edition. Newspapers.com.<br><br>“The Horse Disease.” Chicago Tribune. October 22, 1872, First edition. Newspapers.com.<br><br>“The Horse Disease.” Chicago Tribune. October 23, 1872, First edition. Newspapers.com.<br><br>“The Horse Disease.” Chicago Tribune. October 25, 1872, First edition. Newspapers.com.<br><br>“The Horse Disease.” Chicago Tribune. October 26, 1872, First edition. Newspapers.com.<br><br>“The Horse Disease.” Chicago Tribune. October 26, 1872, First edition. Newspapers.com.<br><br>“The Horse Disease.” Chicago Tribune. October 26, 1872, First edition. Newspapers.com.<br><br>“The Horse Disease.” Chicago Tribune. October 27, 1872, First edition. Newspapers.com.<br><br>“The Horse Disease.” Chicago Tribune. October 28, 1872, First edition. Newspapers.com.<br><br>“The Horse Disease.” Chicago Tribune. October 29, 1872, First edition. Newspapers.com.<br><br>“The Horse Disease.” Chicago Tribune. October 30, 1872, First edition. Newspapers.com.<br><br>“The Horse Disease.” Chicago Tribune. October 31, 1872, First edition. Newspapers.com.<br><br>“The Horse Disease.” Chicago Tribune. November 3, 1872, First edition. Newspapers.com.<br><br>“The Horse Disease.” Chicago Tribune. November 3, 1872, First edition. Newspapers.com.<br><br>“The Horse Disease.” Chicago Tribune. November 4, 1872, First edition. Newspapers.com.<br><br>“The Horse Disease.” Chicago Tribune. November 5, 1872, First edition. Newspapers.com.<br><br>“The Horse Disease.” Chicago Tribune. November 6, 1872, First edition. Newspapers.com.<br><br>“The Horse-Disease.” Chicago Tribune. October 30, 1872, First edition. Newspapers.com.<br><br>“The Horse-Disease.” Chicago Tribune. October 31, 1872, First edition. Newspapers.com.<br><br>“The Horse-Disease.” Chicago Tribune. November 1, 1872, First edition. Newspapers.com.<br><br>“The Horse-Disease.” Chicago Tribune. November 1, 1872, First edition. Newspapers.com.<br><br>“The Horses.” Chicago Tribune. November 8, 1872, First edition. Newspapers.com.<br><br>“The Horses.” Chicago Tribune. November 14, 1872, First edition. Newspapers.com.<br><br>“The Horses.” Chicago Tribune. November 15, 1872, First edition. Newspapers.com.<br><br>“The Horses in Council.” Chicago Tribune. November 3, 1872, First edition. Newspapers.com.<br><br>“The Horses Yesterday.” Chicago Tribune. November 4, 1872, First edition. Newspapers.com.<br><br>“The Inter Ocean.” Chicago Inter Ocean. October 25, 1872, First edition. Newspapers.com.<br><br></h8>')
+                //.prompt({callback:function(){alert('This is called after OK click!')}})
+                .show()
+
+          }
+        }]
+      }); // do not add to map in order to prevent loading above the button for data without coordinates
+
+      // declare a variable for the slider date
+      var currentDate = $('.slider').val();
+
+      sequenceUI(pointData, info); // Produces the time slider and sends the layer to it
+      createTemporalLegend(currentDate); // Produces temporal legend upon map loading
+      updateStables(pointData, info, currentDate); // Update the stables layer according to the date
+      drawLegend(); // Draws the legend
+      addButtons(infoButton, citationButton); // Adds the info and citation buttons after the button for data without coordinates
+
+    }; //end drawMap function
+
+    function sequenceUI(pointData, info) { // Define sequenceUI
+
+      // create Leaflet control for the slider
+      var sliderControl = L.control({
+        position: 'bottomleft',
+        follow: true
+      });
+
+      // add controls to the slider
+      sliderControl.onAdd = function(map) {
+
+        var controls = L.DomUtil.get("slider"); // get the style settings
+
+        // disable the mouse events and map dragging on mousedown
+        L.DomEvent.addListener(controls, 'mousedown', function(e) {
+          L.DomEvent.stopPropagation(e);
+          map.dragging.disable();
+        });
+
+        // re-enable map dragging on mouseout
+        L.DomEvent.addListener(slider, "mouseout", function(e) {
+          map.dragging.enable();
+        });
+
+        return controls; // return the style settings
+
+      }
+
+      // add the control to the map
+      sliderControl.addTo(map);
+
+      $('.slider')
+        .on('input change', function() {
+          var currentDate = $(this).val(); // identifies the year selected
+          createTemporalLegend(currentDate);
+          updateStables(pointData, info, currentDate);
+        });
+    }; // End sequenceUI
+
+    function createTemporalLegend(currentDate) { // Define createTemporalLegend
+
+      var temporalLegend = L.control({
+        position: 'bottomleft' // place the temporal legend at bottom left corner
+      });
+
+      // when added to the map
+      temporalLegend.onAdd = function(map) {
+
+        var div = L.DomUtil.get("temporal"); // get the style settings
+
+        // disable the mouse events
+        L.DomEvent.addListener(div, 'mousedown', function(e) {
+          L.DomEvent.stopPropagation(e);
+        });
+
+        return div; // return the style settings
+
+      }
+
+      //convert the Julian Day Number to the Gregorian Calendar Date
+      var X = parseFloat(currentDate) + 0.5;
+      var Z = Math.floor(X); //Get day without time
+      var F = X - Z; //Get time
+      var Y = Math.floor((Z - 1867216.25) / 36524.25);
+      var A = Z + 1 + Y - Math.floor(Y / 4);
+      var B = A + 1524;
+      var C = Math.floor((B - 122.1) / 365.25);
+      var D = Math.floor(365.25 * C);
+      var G = Math.floor((B - D) / 30.6001);
+      //must get number less than or equal to 12)
+      var month_p = (G < 13.5) ? (G - 1) : (G - 13);
+      //if Month is January or February, or the rest of year
+      var year = (month_p < 2.5) ? (C - 4715) : (C - 4716);
+      month_p -= 1; //Handle JavaScript month format
+      var month = month_p + 1
+      var UT = B - D - Math.floor(30.6001 * G) + F;
+      var day = Math.floor(UT);
+      //end conversion of Julian Day Number to Gregorian Calendar date
+
+      $('#temporal span').html(month + "/" + day + "/" + year); //change grade value to that currently selected by UI slider
+
+      temporalLegend.addTo(map); // add the temporal legend to the map
+
+    }; // End createTemporalLegend
+
+    function updateStables(pointData, info, currentDate) { // Define updateStables
+
+      // Declare a variable for your custom icon and style
+      var blackIcon = L.icon({
+        iconUrl: 'img/icon_stable_simple_black.png', // local path to the desired icon image file
+        iconSize: [20, 20], // size of the icon
+        iconAnchor: [0, 0], // point of the icon which will correspond to marker's location
+        popupAnchor: [7, 0] // point from which the popup should open relative to the iconAnchor
+      });
+
+      // Declare a variable for your custom icon and style
+      var redIcon = L.icon({
+        iconUrl: 'img/icon_stable_redwhite.png', // local path to the desired icon image file
+        iconSize: [20, 20], // size of the icon
+        iconAnchor: [0, 0], // point of the icon which will correspond to marker's location
+        popupAnchor: [7, 0] // point from which the popup should open relative to the iconAnchor
+      });
+
+      pointData.eachLayer(function(layer) {
+        var props = layer.feature.properties; // Define a properties variable called props
+        var stableNotes = props[currentDate]; // Define a variable for notes about horse sickness at stables
+        if (stableNotes === null) {
+          layer.setIcon(blackIcon);
+        } else {
+          layer.setIcon(redIcon);
+        }
+        layer.bindPopup("<h4 style='font-size:12px; text-transform: uppercase; font-style: normal'>" + props.stable_name +
+          "<h4>" + props.old_street_address +
+          "<br>Number of Horses: " + props.horses +
+          "<br>Notes: " + stableNotes + "</h4>"
+        );
+      });
+
+      var notes = [];
+
+      info.forEach(function(information) {
+        var stableData = information["notes_" + currentDate];
+        if (stableData != '') {
+          notes.push('<h3>' + information.stable_name + '</h3><h6>' + stableData + '</h6><hr>');
+        }
+      });
+
+      makeWindow(notes, currentDate); // Call makeWindow function and send notes to it
+
+    }; // End updateStables
+
+    var infoWindow; // Declare a universal infoWindow variable and leave undefined
+
+    function makeWindow(notes, currentDate) { // Define makeWindow function using the notes variable
+
+      //convert the Julian Day Number to the Gregorian Calendar Date
+      var X = parseFloat(currentDate) + 0.5;
+      var Z = Math.floor(X); //Get day without time
+      var F = X - Z; //Get time
+      var Y = Math.floor((Z - 1867216.25) / 36524.25);
+      var A = Z + 1 + Y - Math.floor(Y / 4);
+      var B = A + 1524;
+      var C = Math.floor((B - 122.1) / 365.25);
+      var D = Math.floor(365.25 * C);
+      var G = Math.floor((B - D) / 30.6001);
+      //must get number less than or equal to 12)
+      var month_p = (G < 13.5) ? (G - 1) : (G - 13);
+      //if Month is January or February, or the rest of year
+      var year = (month_p < 2.5) ? (C - 4715) : (C - 4716);
+      month_p -= 1; //Handle JavaScript month format
+      var month = month_p + 1
+      var UT = B - D - Math.floor(30.6001 * G) + F;
+      var day = Math.floor(UT);
+      //end conversion of Julian Day Number to Gregorian Calendar date
+
+      var fluNotes = notes.join(""); // Remove commas from notes array and join
+
+      // If the infoWindow variable is already defined...
+      if (infoWindow != undefined) {
+        infoWindow.removeFrom(map); // remove it from the map.
+      } // This prevents the propagation of multiple infoWindow buttons on the map as the slider is moved
+
+      // create an info window button
+      infoWindow = L.easyButton({
+        id: 'infoWindow',
+        position: 'topright',
+        states: [{
+          stateName: 'show-info',
+          icon: '<i class="fas fa-exclamation-triangle"></i>',
+          title: 'Stable data without spatial references',
+          onClick: function(btn, map) { // open the info window on clicking
+            var win =  L.control.window(map,{maxWidth:400,modal: true})
+                .title('Influenza Notes - No Addresses<br>' + month + '/' + day + '/' + year + '<hr>')
+                .content(fluNotes)
+                //.prompt({callback:function(){alert('This is called after OK click!')}})
+                .show()
+          }
+        }]
+      }).addTo(map); // add the info window button to the map
+
+    };
+
+    function drawLegend() { // Define drawLegend
+      // Define legend as a control at the bottom right
+      var legend = L.control({
+        position: 'bottomright'
+      });
+
+      // Add content to the legend
+      legend.onAdd = function(map) {
+
+        var legendContainer = L.DomUtil.create("div", "legend");
+
+        L.DomEvent.addListener(legendContainer, 'mousedown', function(e) {
+          L.DomEvent.stopPropagation(e);
+        });
+
+        $(legendContainer).append("<h4 id='legendTitle' style='font-size:16px; font-style: normal; text-transform: uppercase; font-weight: bold'>Map Legend</h4>");
+
+        var symbolsContainer = L.DomUtil.create('div', 'symbolsContainer'),
+          grades = ["Stable", "Infected Stable"],
+          labels = ["img/icon_stable_simple_black.png", "img/icon_stable_redwhite.png"];
+
+        symbolsContainer.innerHTML +=
+          "<h5><img src='img/icon_stable_simple_black.png' height='25' width='25' style='vertical-align: middle; padding: 5px'>" + '  Stable' + '<br>' +
+          "<img src='img/icon_stable_redwhite.png' height='25' width='25' style='vertical-align: middle; padding: 5px'>" + '  Infected Stable' + '<br>' +
+          '<img src="img/icon_streetcar_dg.png" width="35" height="30" style="vertical-align:bottom;">' + '    Streetcar Line' + '</h5>';
+
+        $(legendContainer).append(symbolsContainer);
+
+        return legendContainer;
+      };
+      // Add the legend to the map
+      legend.addTo(map);
+
+    }; // End drawLegend
+
+    function addButtons(infoButton, citationButton) { // Add the infoButton and citationButton at the end
+
+      // Add the variables to the map last
+      infoButton.addTo(map);
+      citationButton.addTo(map);
+
+    }; // End addButtons
+
+  </script>
+</body>
+
+</html>

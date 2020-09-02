@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "streetcar_line_Clybourn_2",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "line_name": "Clybourn Ave" }, "geometry": { "type": "MultiLineString", "coordinates": [ [ [ -87.658267045124745, 41.917203848818311 ], [ -87.639548271480237, 41.903762457615571 ], [ -87.631438531865768, 41.90390881278968 ] ] ] } }
+]
+}

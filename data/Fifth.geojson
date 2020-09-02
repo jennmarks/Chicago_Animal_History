@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "Fifth",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 1, "line": "Fifth" }, "geometry": { "type": "MultiLineString", "coordinates": [ [ [ -87.63389, 41.88448 ], [ -87.63382, 41.88193 ], [ -87.63374, 41.87934 ], [ -87.63367, 41.87681 ], [ -87.63361, 41.87451 ], [ -87.63357, 41.87217 ] ] ] } }
+]
+}
