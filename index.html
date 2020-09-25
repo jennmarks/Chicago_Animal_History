@@ -294,6 +294,8 @@
       maxZoom: 18
     });
 
+    var infoWindow; // Declare a universal infoWindow variable and leave undefined
+
     // Add a scale bar
     L.control.scale({
       position: 'bottomright' // Position the scale bar at the bottom-right corner
@@ -1386,7 +1388,7 @@
                 .show()
           }
         }]
-      }); // do not add to map in order to prevent loading above the button for data without coordinates
+      }).addTo(map); // add to map
 
       // create a citation button to store citations for sources
       var citationButton = L.easyButton({
@@ -1405,7 +1407,7 @@
 
           }
         }]
-      }); // do not add to map in order to prevent loading above the button for data without coordinates
+      }).addTo(map); // add to map
 
       // declare a variable for the slider date
       var currentDate = $('.slider').val();
@@ -1414,7 +1416,6 @@
       createTemporalLegend(currentDate); // Produces temporal legend upon map loading
       updateStables(pointData, info, currentDate); // Update the stables layer according to the date
       drawLegend(); // Draws the legend
-      addButtons(infoButton, citationButton); // Adds the info and citation buttons after the button for data without coordinates
 
     }; //end drawMap function
 
@@ -1549,8 +1550,6 @@
 
     }; // End updateStables
 
-    var infoWindow; // Declare a universal infoWindow variable and leave undefined
-
     function makeWindow(notes, currentDate) { // Define makeWindow function using the notes variable
 
       //convert the Julian Day Number to the Gregorian Calendar Date
@@ -1634,14 +1633,6 @@
       legend.addTo(map);
 
     }; // End drawLegend
-
-    function addButtons(infoButton, citationButton) { // Add the infoButton and citationButton at the end
-
-      // Add the variables to the map last
-      infoButton.addTo(map);
-      citationButton.addTo(map);
-
-    }; // End addButtons
 
   </script>
 </body>
